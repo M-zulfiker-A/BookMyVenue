@@ -1,0 +1,22 @@
+# Dev image — TanStack Start + Cloudflare Workers runtime (via @cloudflare/vite-plugin).
+# Uses Node.js (not bun) because @cloudflare/vite-plugin / miniflare relies on
+# Node.js WebSocket internals (the 'upgrade' and 'unexpected-response' events)
+# that bun does not implement, causing the dev server to hang silently.
+# Miniflare emulates D1 / KV / R2 locally — no external services needed.
+FROM node:20-slim
+
+WORKDIR /app
+
+# Install deps first so source edits don't bust the install layer.
+COPY package.json package-lock.json ./
+COPY packages ./packages
+COPY apps ./apps
+RUN npm install --legacy-peer-deps
+
+# Source is bind-mounted by docker-compose, but copy as a fallback for
+# `docker build` outside compose.
+COPY . .
+
+EXPOSE 8080
+
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "8080"]

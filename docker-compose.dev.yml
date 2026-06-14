@@ -1,0 +1,30 @@
+# Local dev stack — runs the TanStack/Cloudflare app with miniflare's built-in
+# SQLite D1 + KV emulation (no external Postgres or Redis required).
+#
+# Usage:
+#   1. cp .env.docker.example .env.docker   # fill in BETTER_AUTH_SECRET at minimum
+#   2. docker compose -f docker-compose.dev.yml up
+#
+# The @cloudflare/vite-plugin (via miniflare) automatically emulates:
+#   - Cloudflare D1   → local SQLite file (.wrangler/state/d1/)
+#   - Cloudflare KV   → local SQLite file (.wrangler/state/kv/)
+#   - Cloudflare R2   → local directory  (.wrangler/state/r2/)
+# No external database or cache service is needed for local development.
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    env_file:
+      - .env.docker
+    working_dir: /app
+    volumes:
+      # Bind-mount source for HMR — node_modules stays inside the image.
+      - .:/app
+      - /app/node_modules
+      # Persist miniflare local state (D1, KV, R2) across container restarts.
+      - .wrangler:/app/.wrangler
+    ports:
+      - "8080:8080"
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "8080"]
