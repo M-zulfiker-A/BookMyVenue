@@ -1,46 +1,56 @@
-# Local Docker Dev
+# BookMyVenue
 
-Spin up the full local Supabase stack + the web app with one command.
+A modern venue booking application built with TanStack Start, Cloudflare Workers, D1 Database, R2 Storage, and KV Cache.
 
-## Prerequisites
-- Docker (Desktop, Rancher, OrbStack, or Podman with Docker API compat)
+## Local Development Setup
 
-## Start
+To run this application locally, you only need to use Cloudflare Wrangler.
 
-```bash
-cp .env.docker.example .env.docker
-docker compose -f docker-compose.dev.yml up
-```
+### Prerequisites
 
-On first boot, grab the local JWTs printed by `supabase start` and paste them into `.env.docker`:
+- **Node.js**: v18.0.0 or higher
+- **npm**: v10.0.0 or higher
 
-```bash
-docker compose -f docker-compose.dev.yml exec supabase supabase status
-```
+### Step-by-Step Setup
 
-Restart the `web` service after editing `.env.docker`:
+1. **Install Dependencies**
+   ```bash
+   npm install
+   ```
 
-```bash
-docker compose -f docker-compose.dev.yml restart web
-```
+2. **Configure Environment Variables**
+   Copy the example environment file:
+   ```bash
+   cp .env.example .env
+   ```
+   Generate a random string for `BETTER_AUTH_SECRET` (e.g., using `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`) and update it in your `.env` file.
 
-## URLs
-- App: http://localhost:8080
-- Supabase Studio: http://localhost:54323
-- API gateway (REST/Auth/Storage/Realtime): http://localhost:54321
-- Inbucket (catches auth emails): http://localhost:54324
-- Postgres: `localhost:54322` (user `postgres`, password `postgres`)
+3. **Set Up the Local Database**
+   Apply migrations to your local D1 database:
+   ```bash
+   npx wrangler d1 migrations apply book-my-venue-db --local
+   ```
 
-## Common tasks
+   Seed the local database with initial venue data:
+   ```bash
+   npm run db:seed
+   ```
 
-| Task                | Command                                                                   |
-| ------------------- | ------------------------------------------------------------------------- |
-| Reset DB & re-run migrations | `docker compose -f docker-compose.dev.yml exec supabase supabase db reset` |
-| Tail web logs       | `docker compose -f docker-compose.dev.yml logs -f web`                    |
-| Stop everything     | `docker compose -f docker-compose.dev.yml down`                           |
-| Stop + wipe volumes | `docker compose -f docker-compose.dev.yml down -v`                        |
+4. **Start the Development Server**
+   Start the local development server using Wrangler:
+   ```bash
+   npx wrangler dev
+   ```
+   The app will be running at [http://127.0.0.1:8787](http://127.0.0.1:8787).
 
-## Notes
-- Uses `network_mode: host`, which is simplest on Linux. On Docker Desktop (macOS/Windows) host networking is now supported but newer; if `web` can't reach `localhost:54321`, switch to a bridged network and use `host.docker.internal`.
-- This setup is for local-only development. Plain `npm run dev` against the hosted Lovable Cloud `.env` still works as before — Docker uses a separate `.env.docker`.
-- `apps/mobile` (Expo) and `apps/mcp` (Python) are not dockerized; run them on the host as usual.
+---
+
+## Project Structure
+
+- **`apps/`**: Sub-applications (e.g. mobile, MCP integrations).
+- **`packages/`**: Monorepo packages for domain models, core contracts, and UI tokens.
+- **`src/`**: The main TanStack Start web application.
+  - `routes/`: Frontend routing structure.
+  - `components/`: UI components.
+  - `infrastructure/`: Providers and dependency injection.
+  - `lib/`: Helper libraries, middleware, and core utilities.
