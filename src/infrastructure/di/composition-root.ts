@@ -122,25 +122,35 @@ export function buildContainer(opts: RootOptions = {}): Container {
   c.registerValue(T.UserDb, userDbInstance);
   c.registerValue(T.UserId, opts.userId);
   c.registerValue(T.AuthProviderToken, authProvider);
-  
+
   // Storage provider stub (Phase 4 will wire up R2)
   c.registerValue(T.StorageProviderToken, {
     getPublicUrl: (_b: string, p: string) => p,
-    createSignedUploadUrl: () => { throw new Error("Storage migration pending"); },
-    createSignedDownloadUrl: () => { throw new Error("Storage migration pending"); },
-    upload: () => { throw new Error("Storage migration pending"); },
-    delete: () => { throw new Error("Storage migration pending"); },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    createSignedUploadUrl: () => {
+      throw new Error("Storage migration pending");
+    },
+    createSignedDownloadUrl: () => {
+      throw new Error("Storage migration pending");
+    },
+    upload: () => {
+      throw new Error("Storage migration pending");
+    },
+    delete: () => {
+      throw new Error("Storage migration pending");
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any);
 
   // Cache
-  c.registerSingleton(T.CacheStoreToken, (c) =>
-    new CacheStoreManager({
-      drizzleDb: c.resolve(T.AdminDb),
-      kv: opts.cacheKv ?? getCloudflareEnv().CACHE_KV,
-      upstashUrl: process.env.UPSTASH_REDIS_REST_URL,
-      upstashToken: process.env.UPSTASH_REDIS_REST_TOKEN,
-    }),
+  c.registerSingleton(
+    T.CacheStoreToken,
+    (c) =>
+      new CacheStoreManager({
+        drizzleDb: c.resolve(T.AdminDb),
+        kv: opts.cacheKv ?? getCloudflareEnv().CACHE_KV,
+        upstashUrl: process.env.UPSTASH_REDIS_REST_URL,
+        upstashToken: process.env.UPSTASH_REDIS_REST_TOKEN,
+      }),
   );
 
   // Repositories (singletons within this request scope)
@@ -177,18 +187,17 @@ export function buildContainer(opts: RootOptions = {}): Container {
   c.registerSingleton(T.ProfilesRepoToken, (c) =>
     makeDrizzleProfilesRepo({ adminDb: c.resolve(T.AdminDb) }),
   );
-  
+
   // Invoice storage stub (Phase 4 will wire up R2)
   c.registerSingleton(T.InvoiceStorageToken, () => ({
     upload: async (p: string) => ({ path: p }),
     createSignedDownloadUrl: async (p: string) => p,
   }));
-  
+
   c.registerSingleton(T.InvoicePdfRendererToken, () => makePdfLibInvoiceRenderer());
   c.registerSingleton(T.EmailSenderToken, () =>
     makeResendEmailSender({
-      defaultFrom:
-        process.env.INVOICE_FROM_EMAIL ?? "Book My Venue <onboarding@resend.dev>",
+      defaultFrom: process.env.INVOICE_FROM_EMAIL ?? "Book My Venue <onboarding@resend.dev>",
     }),
   );
 

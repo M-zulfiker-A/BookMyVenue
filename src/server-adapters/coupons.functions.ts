@@ -10,14 +10,19 @@ import * as T from "@/infrastructure/di/tokens";
 export const listHostCoupons = createServerFn({ method: "GET" })
   .middleware([requireAuth])
   .handler(({ context }) =>
-    buildContainer({ db: context.db, userId: context.userId }).resolve(T.ListHostCoupons)(context.userId),
+    buildContainer({ db: context.db, userId: context.userId }).resolve(T.ListHostCoupons)(
+      context.userId,
+    ),
   );
 
 export const createCoupon = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .inputValidator((input: unknown) => CouponSchema.parse(input))
   .handler(({ data, context }) =>
-    buildContainer({ db: context.db, userId: context.userId }).resolve(T.CreateCoupon)(data, context.userId),
+    buildContainer({ db: context.db, userId: context.userId }).resolve(T.CreateCoupon)(
+      data,
+      context.userId,
+    ),
   );
 
 export const deleteCoupon = createServerFn({ method: "POST" })

@@ -48,7 +48,9 @@ function HostBookingsPage() {
       {isLoading ? (
         <p className="text-lead/50 text-center py-12">Loading…</p>
       ) : bookings.length === 0 ? (
-        <p className="text-lead/50 text-center py-12 bg-white rounded-2xl ring-1 ring-black/5">No bookings yet.</p>
+        <p className="text-lead/50 text-center py-12 bg-white rounded-2xl ring-1 ring-black/5">
+          No bookings yet.
+        </p>
       ) : (
         <div className="bg-white rounded-2xl ring-1 ring-black/5 overflow-hidden">
           <table className="w-full text-left">
@@ -69,14 +71,16 @@ function HostBookingsPage() {
                 const customerLabel =
                   b.source === "block_off"
                     ? "—"
-                    : b.guest_name ?? (b.customer_id ? "Online customer" : "—");
+                    : (b.guest_name ?? (b.customer_id ? "Online customer" : "—"));
                 return (
                   <tr key={b.id}>
                     <td className="px-6 py-4">{formatDateRange(b.start_time, b.end_time)}</td>
                     <td className="px-6 py-4 font-medium">{v?.name ?? "—"}</td>
                     <td className="px-6 py-4">{customerLabel}</td>
                     <td className="px-6 py-4">
-                      <span className={`inline-block px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded ${badge.cls}`}>
+                      <span
+                        className={`inline-block px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded ${badge.cls}`}
+                      >
                         {badge.label}
                       </span>
                     </td>
@@ -84,12 +88,19 @@ function HostBookingsPage() {
                       {b.source === "block_off" ? "—" : formatMoney(b.total_cents, b.currency)}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <span className={`inline-block px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded ${
-                        b.status === "confirmed" ? "bg-green-100 text-green-700" :
-                        b.status === "pending" ? "bg-amber-100 text-amber-700" :
-                        b.status === "cancelled" ? "bg-stone-100 text-stone-500" :
-                        "bg-red-100 text-red-700"
-                      }`}>{b.status}</span>
+                      <span
+                        className={`inline-block px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded ${
+                          b.status === "confirmed"
+                            ? "bg-green-100 text-green-700"
+                            : b.status === "pending"
+                              ? "bg-amber-100 text-amber-700"
+                              : b.status === "cancelled"
+                                ? "bg-stone-100 text-stone-500"
+                                : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {b.status}
+                      </span>
                     </td>
                   </tr>
                 );

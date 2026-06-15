@@ -1,6 +1,14 @@
 // Shared RN primitives that mirror the shadcn components used on web.
 // Keep the props API close so screen code looks familiar across platforms.
-import { Pressable, Text, View, TextInput, type PressableProps, type TextInputProps, type ViewProps } from "react-native";
+import {
+  Pressable,
+  Text,
+  View,
+  TextInput,
+  type PressableProps,
+  type TextInputProps,
+  type ViewProps,
+} from "react-native";
 import { forwardRef } from "react";
 
 type Variant = "primary" | "outline" | "ghost";
@@ -9,7 +17,12 @@ export interface ButtonProps extends PressableProps {
   children: React.ReactNode;
 }
 
-export function Button({ variant = "primary", children, className, ...rest }: ButtonProps & { className?: string }) {
+export function Button({
+  variant = "primary",
+  children,
+  className,
+  ...rest
+}: ButtonProps & { className?: string }) {
   const base = "rounded-full px-5 py-3 items-center justify-center";
   const styles: Record<Variant, string> = {
     primary: "bg-brand",
@@ -45,7 +58,9 @@ export function Card({ className, ...rest }: ViewProps & { className?: string })
 }
 
 export function Label({ children }: { children: React.ReactNode }) {
-  return <Text className="text-xs uppercase tracking-widest text-muted-foreground mb-2">{children}</Text>;
+  return (
+    <Text className="text-xs uppercase tracking-widest text-muted-foreground mb-2">{children}</Text>
+  );
 }
 
 export function H1({ children }: { children: React.ReactNode }) {

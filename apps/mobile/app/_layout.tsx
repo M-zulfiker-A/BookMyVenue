@@ -30,7 +30,12 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <AuthGate>
           <StatusBar style="dark" />
-          <Stack screenOptions={{ headerStyle: { backgroundColor: "#fafaf9" }, headerTitleStyle: { fontFamily: "Instrument Serif" } }}>
+          <Stack
+            screenOptions={{
+              headerStyle: { backgroundColor: "#fafaf9" },
+              headerTitleStyle: { fontFamily: "Instrument Serif" },
+            }}
+          >
             <Stack.Screen name="index" options={{ title: "Book My Venue" }} />
             <Stack.Screen name="login" options={{ title: "Sign in" }} />
             <Stack.Screen name="signup" options={{ title: "Create account" }} />

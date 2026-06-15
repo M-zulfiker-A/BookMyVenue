@@ -46,11 +46,11 @@ export function createAuth() {
     socialProviders: {
       ...(cfEnv.GOOGLE_CLIENT_ID && cfEnv.GOOGLE_CLIENT_SECRET
         ? {
-          google: {
-            clientId: cfEnv.GOOGLE_CLIENT_ID,
-            clientSecret: cfEnv.GOOGLE_CLIENT_SECRET,
-          },
-        }
+            google: {
+              clientId: cfEnv.GOOGLE_CLIENT_ID,
+              clientSecret: cfEnv.GOOGLE_CLIENT_SECRET,
+            },
+          }
         : {}),
     },
 
@@ -83,4 +83,3 @@ export function createAuth() {
 }
 
 export type Auth = ReturnType<typeof createAuth>;
-

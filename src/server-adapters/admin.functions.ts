@@ -20,9 +20,7 @@ import { buildContainer } from "@/infrastructure/di/composition-root";
 import * as T from "@/infrastructure/di/tokens";
 
 function ctnr(db?: unknown, userId?: string) {
-  return db
-    ? buildContainer({ db: db as never, userId })
-    : buildContainer();
+  return db ? buildContainer({ db: db as never, userId }) : buildContainer();
 }
 
 export const requireAdmin = createServerFn({ method: "GET" })
@@ -38,7 +36,9 @@ export const requireAdmin = createServerFn({ method: "GET" })
 
 export const getPlatformStats = createServerFn({ method: "GET" })
   .middleware([requireAuth])
-  .handler(({ context }) => ctnr(context.db, context.userId).resolve(T.PlatformStats)(context.userId));
+  .handler(({ context }) =>
+    ctnr(context.db, context.userId).resolve(T.PlatformStats)(context.userId),
+  );
 
 // ---- Users ----
 export const listAllUsers = createServerFn({ method: "GET" })

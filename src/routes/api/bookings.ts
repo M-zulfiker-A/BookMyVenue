@@ -26,11 +26,10 @@ export const Route = createFileRoute("/api/bookings")({
         } catch (err) {
           return new Response(
             JSON.stringify({ error: err instanceof Error ? err.message : "Internal error" }),
-            { status: 500, headers: { "Content-Type": "application/json" } }
+            { status: 500, headers: { "Content-Type": "application/json" } },
           );
         }
       },
     },
   },
 });
-

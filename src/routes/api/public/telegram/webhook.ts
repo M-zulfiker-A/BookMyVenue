@@ -85,7 +85,9 @@ function parseQuery(text: string): {
 
   // "in <city>" or "at <city>"
   let city: string | undefined;
-  const cityMatch = lower.match(/\b(?:in|at|near)\s+([a-zA-Z][a-zA-Z\s]{1,40}?)(?:\s+(?:for|with|under|over)\b|$)/);
+  const cityMatch = lower.match(
+    /\b(?:in|at|near)\s+([a-zA-Z][a-zA-Z\s]{1,40}?)(?:\s+(?:for|with|under|over)\b|$)/,
+  );
   if (cityMatch) city = cityMatch[1].trim();
 
   // "for 200" / "200 guests" / "200 people"

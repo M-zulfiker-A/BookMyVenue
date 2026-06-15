@@ -110,10 +110,7 @@ export const setUserRoleUseCase =
 
 export const setUserSuspendedUseCase =
   (admin: AdminRepo, roles: UserRolesRepo) =>
-  async (
-    callerId: string,
-    args: { userId: string; suspended: boolean },
-  ): Promise<void> => {
+  async (callerId: string, args: { userId: string; suspended: boolean }): Promise<void> => {
     await assertAdminUseCase(roles)(callerId);
     await admin.setUserSuspended(args.userId, args.suspended);
   };
@@ -131,22 +128,20 @@ export const listAllVenuesUseCase =
 
 export const setVenueSuspendedAsAdminUseCase =
   (admin: AdminRepo, roles: UserRolesRepo, cache: CacheStore) =>
-  async (
-    callerId: string,
-    args: { venueId: string; suspended: boolean },
-  ): Promise<void> => {
+  async (callerId: string, args: { venueId: string; suspended: boolean }): Promise<void> => {
     await assertAdminUseCase(roles)(callerId);
     await admin.setVenueSuspended(args.venueId, args.suspended);
-    try { await cache.invalidateNamespace("venues"); } catch { /* non-fatal */ }
+    try {
+      await cache.invalidateNamespace("venues");
+    } catch {
+      /* non-fatal */
+    }
   };
 
 // ---- Bookings ----
 export const listAllBookingsUseCase =
   (admin: AdminRepo, roles: UserRolesRepo) =>
-  async (
-    callerId: string,
-    filter: AdminBookingFilter,
-  ): Promise<AdminBookingListItem[]> => {
+  async (callerId: string, filter: AdminBookingFilter): Promise<AdminBookingListItem[]> => {
     await assertAdminUseCase(roles)(callerId);
     return admin.listBookings(filter);
   };
@@ -186,10 +181,7 @@ export const listAllCouponsUseCase =
 
 export const setCouponActiveUseCase =
   (admin: AdminRepo, roles: UserRolesRepo) =>
-  async (
-    callerId: string,
-    args: { id: string; active: boolean },
-  ): Promise<void> => {
+  async (callerId: string, args: { id: string; active: boolean }): Promise<void> => {
     await assertAdminUseCase(roles)(callerId);
     await admin.setCouponActive(args.id, args.active);
   };

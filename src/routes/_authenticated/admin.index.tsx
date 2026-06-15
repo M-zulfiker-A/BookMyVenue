@@ -40,12 +40,24 @@ function AdminOverview() {
     { label: "Hosts", value: s.hosts_total, sub: `${s.admins_total} admins` },
     { label: "Venues active", value: s.venues_active, sub: `${s.venues_suspended} suspended` },
     { label: "Bookings", value: s.bookings_total, sub: `${s.bookings_30d} · 30d` },
-    { label: "Revenue total", value: formatMoney(s.revenue_cents_total, "USD"), sub: `${formatMoney(s.revenue_cents_30d, "USD")} · 30d` },
+    {
+      label: "Revenue total",
+      value: formatMoney(s.revenue_cents_total, "USD"),
+      sub: `${formatMoney(s.revenue_cents_30d, "USD")} · 30d`,
+    },
   ];
 
   const discrepancies = [
-    { label: "Stuck pending (past expiry)", value: s.bookings_pending_expired, fix: "/admin/bookings?discrepancy=stuck_pending" },
-    { label: "Confirmed but unpaid", value: s.confirmed_without_payment, fix: "/admin/bookings?discrepancy=confirmed_unpaid" },
+    {
+      label: "Stuck pending (past expiry)",
+      value: s.bookings_pending_expired,
+      fix: "/admin/bookings?discrepancy=stuck_pending",
+    },
+    {
+      label: "Confirmed but unpaid",
+      value: s.confirmed_without_payment,
+      fix: "/admin/bookings?discrepancy=confirmed_unpaid",
+    },
     { label: "Suspended users", value: s.users_suspended, fix: "/admin/users" },
   ];
 
@@ -56,7 +68,9 @@ function AdminOverview() {
       <div className="grid md:grid-cols-5 gap-4">
         {kpis.map((k) => (
           <div key={k.label} className="bg-white p-5 rounded-2xl ring-1 ring-black/5">
-            <span className="block text-[11px] uppercase tracking-widest text-lead/40 font-semibold mb-1">{k.label}</span>
+            <span className="block text-[11px] uppercase tracking-widest text-lead/40 font-semibold mb-1">
+              {k.label}
+            </span>
             <span className="block text-2xl font-serif">{k.value}</span>
             <span className="block text-xs text-lead/50 mt-1">{k.sub}</span>
           </div>
@@ -70,7 +84,12 @@ function AdminOverview() {
             <p className="text-sm text-lead/50">No bookings yet.</p>
           ) : (
             s.bookings_trend_30d.map((d) => (
-              <div key={d.day} className="flex-1 bg-brand/70 rounded-t" title={`${d.day}: ${d.count}`} style={{ height: `${(d.count / maxTrend) * 100}%` }} />
+              <div
+                key={d.day}
+                className="flex-1 bg-brand/70 rounded-t"
+                title={`${d.day}: ${d.count}`}
+                style={{ height: `${(d.count / maxTrend) * 100}%` }}
+              />
             ))
           )}
         </div>
@@ -88,12 +107,21 @@ function AdminOverview() {
         <h2 className="font-medium mb-4">Discrepancies</h2>
         <div className="space-y-2">
           {discrepancies.map((d) => (
-            <div key={d.label} className="flex items-center justify-between border-b last:border-0 border-black/5 py-2">
+            <div
+              key={d.label}
+              className="flex items-center justify-between border-b last:border-0 border-black/5 py-2"
+            >
               <span className="text-sm">{d.label}</span>
               <div className="flex items-center gap-3">
-                <span className={`text-sm font-medium ${d.value > 0 ? "text-amber-700" : "text-lead/40"}`}>{d.value}</span>
+                <span
+                  className={`text-sm font-medium ${d.value > 0 ? "text-amber-700" : "text-lead/40"}`}
+                >
+                  {d.value}
+                </span>
                 {d.value > 0 && (
-                  <a href={d.fix} className="text-xs text-brand font-medium">Resolve →</a>
+                  <a href={d.fix} className="text-xs text-brand font-medium">
+                    Resolve →
+                  </a>
                 )}
               </div>
             </div>

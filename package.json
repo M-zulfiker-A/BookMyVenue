@@ -4,6 +4,23 @@
   "packageManager": "npm@10.8.2",
   "sideEffects": false,
   "type": "module",
+  "overrides": {
+    "better-auth": {
+      "drizzle-orm": "$drizzle-orm"
+    },
+    "@better-auth/drizzle-adapter": {
+      "drizzle-orm": "$drizzle-orm"
+    },
+    "nativewind": {
+      "tailwindcss": "3.4.10"
+    },
+    "react-native-css-interop": {
+      "tailwindcss": "3.4.10"
+    },
+    "@app/mobile": {
+      "tailwindcss": "3.4.10"
+    }
+  },
   "workspaces": [
     "packages/*",
     "apps/*"
@@ -20,7 +37,7 @@
     "turbo:lint": "turbo run lint",
     "cf-typegen": "wrangler types",
     "deploy": "wrangler deploy",
-    "db:seed": "node node_modules/wrangler/bin/wrangler.js d1 execute book-my-venue-db --local --file=seed_kerala_venues.sql"
+    "postinstall": "node scripts/fix-nativewind-tailwind.cjs"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.25.5",
@@ -88,8 +105,8 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "ajv": "^8.20.0",
     "@eslint/js": "^9.32.0",
-    "@libsql/client": "^0.17.3",
     "@types/node": "^22.16.5",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",

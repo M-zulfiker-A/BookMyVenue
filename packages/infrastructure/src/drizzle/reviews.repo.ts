@@ -50,9 +50,7 @@ export function makeReviewsRepo(deps: { adminDb: any; userDb?: any }): ReviewsRe
         created_at: r.createdAt,
         updated_at: r.updatedAt,
         reviewer_name:
-          [r.profile?.firstName, r.profile?.lastName]
-            .filter(Boolean)
-            .join(" ") || "Guest",
+          [r.profile?.firstName, r.profile?.lastName].filter(Boolean).join(" ") || "Guest",
       }));
 
       const average = reviews.length
@@ -70,8 +68,8 @@ export function makeReviewsRepo(deps: { adminDb: any; userDb?: any }): ReviewsRe
           and(
             eq(bookings.customerId, userId),
             eq(bookings.venueId, venueId),
-            eq(bookings.status, "confirmed")
-          )
+            eq(bookings.status, "confirmed"),
+          ),
         )
         .limit(1);
       return rows.length > 0;
@@ -81,12 +79,7 @@ export function makeReviewsRepo(deps: { adminDb: any; userDb?: any }): ReviewsRe
       const rows = await adminDb
         .select()
         .from(venueReviews)
-        .where(
-          and(
-            eq(venueReviews.userId, userId),
-            eq(venueReviews.venueId, venueId)
-          )
-        )
+        .where(and(eq(venueReviews.userId, userId), eq(venueReviews.venueId, venueId)))
         .limit(1);
       return rows[0] ? mapReview(rows[0]) : null;
     },
@@ -114,12 +107,7 @@ export function makeReviewsRepo(deps: { adminDb: any; userDb?: any }): ReviewsRe
       const rows = await db
         .select()
         .from(venueReviews)
-        .where(
-          and(
-            eq(venueReviews.userId, userId),
-            eq(venueReviews.venueId, venueId)
-          )
-        )
+        .where(and(eq(venueReviews.userId, userId), eq(venueReviews.venueId, venueId)))
         .limit(1);
       return mapReview(rows[0]);
     },
@@ -127,12 +115,7 @@ export function makeReviewsRepo(deps: { adminDb: any; userDb?: any }): ReviewsRe
     async deleteByOwner(reviewId, userId) {
       await db
         .delete(venueReviews)
-        .where(
-          and(
-            eq(venueReviews.id, reviewId),
-            eq(venueReviews.userId, userId)
-          )
-        );
+        .where(and(eq(venueReviews.id, reviewId), eq(venueReviews.userId, userId)));
     },
 
     async deleteAsAdmin(reviewId) {

@@ -22,10 +22,12 @@ function mapVenue(row: any): Venue {
     capacity: row.capacity,
     base_price_cents: row.basePriceCents,
     currency: row.currency,
-    address_data: typeof row.addressData === "string" ? JSON.parse(row.addressData) : row.addressData,
+    address_data:
+      typeof row.addressData === "string" ? JSON.parse(row.addressData) : row.addressData,
     amenities: typeof row.amenities === "string" ? JSON.parse(row.amenities) : row.amenities,
     cover_image_url: row.coverImageUrl ?? null,
-    gallery_urls: typeof row.galleryUrls === "string" ? JSON.parse(row.galleryUrls) : row.galleryUrls,
+    gallery_urls:
+      typeof row.galleryUrls === "string" ? JSON.parse(row.galleryUrls) : row.galleryUrls,
     is_active: Boolean(row.isActive),
     is_suspended: Boolean(row.isSuspended),
     pricing_mode: row.pricingMode,
@@ -44,7 +46,8 @@ function mapVenueListItem(row: any): VenueListItem {
     base_price_cents: row.basePriceCents,
     currency: row.currency,
     pricing_mode: row.pricingMode,
-    address_data: typeof row.addressData === "string" ? JSON.parse(row.addressData) : row.addressData,
+    address_data:
+      typeof row.addressData === "string" ? JSON.parse(row.addressData) : row.addressData,
     cover_image_url: row.coverImageUrl ?? null,
     description: row.description ?? null,
   };
@@ -57,7 +60,7 @@ export function makeVenuesRepo(deps: { adminDb: any; userDb?: any }): VenuesRepo
   return {
     async listActive(filter) {
       const conditions = [eq(venues.isActive, true), eq(venues.isSuspended, false)];
-      
+
       if (filter.search) {
         conditions.push(like(sql`lower(${venues.name})`, `%${filter.search.toLowerCase()}%`));
       }
@@ -83,8 +86,8 @@ export function makeVenuesRepo(deps: { adminDb: any; userDb?: any }): VenuesRepo
         conditions.push(
           like(
             sql`lower(json_extract(${venues.addressData}, '$.city'))`,
-            `%${filter.city.toLowerCase()}%`
-          )
+            `%${filter.city.toLowerCase()}%`,
+          ),
         );
       }
 
@@ -131,9 +134,9 @@ export function makeVenuesRepo(deps: { adminDb: any; userDb?: any }): VenuesRepo
         isActive: input.is_active,
         isSuspended: false,
       };
-      
+
       await db.insert(venues).values(insertData);
-      
+
       const rows = await db.select().from(venues).where(eq(venues.id, id)).limit(1);
       return mapVenue(rows[0]);
     },
@@ -146,17 +149,19 @@ export function makeVenuesRepo(deps: { adminDb: any; userDb?: any }): VenuesRepo
       if (patch.capacity !== undefined) updateData.capacity = patch.capacity;
       if (patch.base_price_cents !== undefined) updateData.basePriceCents = patch.base_price_cents;
       if (patch.currency !== undefined) updateData.currency = patch.currency;
-      if (patch.address_data !== undefined) updateData.addressData = JSON.stringify(patch.address_data);
+      if (patch.address_data !== undefined)
+        updateData.addressData = JSON.stringify(patch.address_data);
       if (patch.amenities !== undefined) updateData.amenities = JSON.stringify(patch.amenities);
       if (patch.cover_image_url !== undefined) updateData.coverImageUrl = patch.cover_image_url;
-      if (patch.gallery_urls !== undefined) updateData.galleryUrls = JSON.stringify(patch.gallery_urls);
+      if (patch.gallery_urls !== undefined)
+        updateData.galleryUrls = JSON.stringify(patch.gallery_urls);
       if (patch.pricing_mode !== undefined) updateData.pricingMode = patch.pricing_mode;
       if (patch.is_active !== undefined) updateData.isActive = patch.is_active;
-      
+
       updateData.updatedAt = new Date().toISOString();
 
       await db.update(venues).set(updateData).where(eq(venues.id, id));
-      
+
       const rows = await db.select().from(venues).where(eq(venues.id, id)).limit(1);
       return mapVenue(rows[0]);
     },
@@ -167,7 +172,11 @@ export function makeVenuesRepo(deps: { adminDb: any; userDb?: any }): VenuesRepo
   };
 }
 
-export function makeUserRolesRepo(deps: { adminDb: any; userDb?: any; userId?: string }): UserRolesRepo {
+export function makeUserRolesRepo(deps: {
+  adminDb: any;
+  userDb?: any;
+  userId?: string;
+}): UserRolesRepo {
   const { adminDb, userDb, userId } = deps;
   const db = userDb ?? adminDb;
 

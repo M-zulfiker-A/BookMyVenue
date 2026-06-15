@@ -2,11 +2,7 @@
 
 import { createServerFn } from "@tanstack/react-start";
 import { requireAuth } from "@/lib/auth-middleware";
-import {
-  ReviewIdSchema,
-  UpsertReviewSchema,
-  VenueIdSchema,
-} from "@repo/application/reviews";
+import { ReviewIdSchema, UpsertReviewSchema, VenueIdSchema } from "@repo/application/reviews";
 import { buildContainer } from "@/infrastructure/di/composition-root";
 import * as T from "@/infrastructure/di/tokens";
 
@@ -28,7 +24,10 @@ export const upsertMyReview = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .inputValidator((input: unknown) => UpsertReviewSchema.parse(input))
   .handler(({ data, context }) =>
-    buildContainer({ db: context.db, userId: context.userId }).resolve(T.UpsertMyReview)(data, context.userId),
+    buildContainer({ db: context.db, userId: context.userId }).resolve(T.UpsertMyReview)(
+      data,
+      context.userId,
+    ),
   );
 
 export const deleteMyReview = createServerFn({ method: "POST" })

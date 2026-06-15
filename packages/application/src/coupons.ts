@@ -5,7 +5,11 @@ import type { Coupon } from "@repo/domain/coupons";
 import type { CouponsRepo, CouponWriteInput } from "@repo/contracts";
 
 export const CouponSchema = z.object({
-  code: z.string().min(2).max(40).regex(/^[A-Z0-9_-]+$/i),
+  code: z
+    .string()
+    .min(2)
+    .max(40)
+    .regex(/^[A-Z0-9_-]+$/i),
   venue_id: z.string().uuid().optional().nullable(),
   discount_type: z.enum(["percentage", "fixed_amount"]),
   discount_value: z.number().positive().max(100000),
@@ -16,10 +20,8 @@ export const CouponSchema = z.object({
 });
 export type CouponInput = z.infer<typeof CouponSchema>;
 
-export const listHostCouponsUseCase =
-  (repo: CouponsRepo) =>
-  (hostId: string) =>
-    repo.listForHostVenues(hostId);
+export const listHostCouponsUseCase = (repo: CouponsRepo) => (hostId: string) =>
+  repo.listForHostVenues(hostId);
 
 export const createCouponUseCase =
   (repo: CouponsRepo) =>

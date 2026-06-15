@@ -48,7 +48,12 @@ export function makeUpstashCacheStore(cfg: UpstashConfig): CacheStore {
       const match = `${ns}:*`;
       do {
         const result = await call<[string, string[]]>([
-          "SCAN", cursor, "MATCH", match, "COUNT", 200,
+          "SCAN",
+          cursor,
+          "MATCH",
+          match,
+          "COUNT",
+          200,
         ]);
         if (!result) return;
         cursor = result[0];

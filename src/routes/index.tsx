@@ -15,9 +15,16 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Book My Venue — Spaces for moments that matter" },
-      { name: "description", content: "From intimate glass conservatories to storied stone manors, find the perfect setting for your next celebration, wedding, conference, or party." },
+      {
+        name: "description",
+        content:
+          "From intimate glass conservatories to storied stone manors, find the perfect setting for your next celebration, wedding, conference, or party.",
+      },
       { property: "og:title", content: "Book My Venue — Spaces for moments that matter" },
-      { property: "og:description", content: "Book extraordinary venues for weddings, conferences, parties, and celebrations." },
+      {
+        property: "og:description",
+        content: "Book extraordinary venues for weddings, conferences, parties, and celebrations.",
+      },
       { property: "og:image", content: conservatory },
     ],
   }),
@@ -55,29 +62,63 @@ function HomePage() {
               Spaces for moments that matter.
             </h1>
             <p className="text-lg text-lead/60 text-pretty">
-              From intimate glass conservatories to storied stone manors, find the perfect setting for your next assembly.
+              From intimate glass conservatories to storied stone manors, find the perfect setting
+              for your next assembly.
             </p>
           </div>
 
-          <form onSubmit={onSearch} className="bg-white ring-1 ring-black/5 rounded-[24px] p-2 flex flex-col md:flex-row gap-2 shadow-sm">
+          <form
+            onSubmit={onSearch}
+            className="bg-white ring-1 ring-black/5 rounded-[24px] p-2 flex flex-col md:flex-row gap-2 shadow-sm"
+          >
             <div className="flex-1 px-4 py-3">
-              <label className="block text-[10px] uppercase tracking-wider text-lead/40 font-semibold mb-1">Location or name</label>
-              <input value={search} onChange={(e) => setSearch(e.target.value)} type="text" placeholder="Where are you hosting?" className="w-full bg-transparent outline-none text-sm placeholder:text-lead/30" />
+              <label className="block text-[10px] uppercase tracking-wider text-lead/40 font-semibold mb-1">
+                Location or name
+              </label>
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                type="text"
+                placeholder="Where are you hosting?"
+                className="w-full bg-transparent outline-none text-sm placeholder:text-lead/30"
+              />
             </div>
             <div className="w-px bg-zinc-950/5 hidden md:block" />
             <div className="flex-1 px-4 py-3">
-              <label className="block text-[10px] uppercase tracking-wider text-lead/40 font-semibold mb-1">Event Type</label>
-              <select value={type} onChange={(e) => setType(e.target.value)} className="w-full bg-transparent outline-none text-sm appearance-none">
+              <label className="block text-[10px] uppercase tracking-wider text-lead/40 font-semibold mb-1">
+                Event Type
+              </label>
+              <select
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                className="w-full bg-transparent outline-none text-sm appearance-none"
+              >
                 <option value="">Any</option>
-                {VENUE_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                {VENUE_TYPES.map((t) => (
+                  <option key={t.value} value={t.value}>
+                    {t.label}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="w-px bg-zinc-950/5 hidden md:block" />
             <div className="flex-1 px-4 py-3">
-              <label className="block text-[10px] uppercase tracking-wider text-lead/40 font-semibold mb-1">Guests</label>
-              <input value={guests} onChange={(e) => setGuests(e.target.value)} type="number" min="1" placeholder="Add guests" className="w-full bg-transparent outline-none text-sm placeholder:text-lead/30" />
+              <label className="block text-[10px] uppercase tracking-wider text-lead/40 font-semibold mb-1">
+                Guests
+              </label>
+              <input
+                value={guests}
+                onChange={(e) => setGuests(e.target.value)}
+                type="number"
+                min="1"
+                placeholder="Add guests"
+                className="w-full bg-transparent outline-none text-sm placeholder:text-lead/30"
+              />
             </div>
-            <button type="submit" className="bg-brand text-brand-foreground px-8 py-3 rounded-[18px] font-medium text-sm ring-1 ring-brand">
+            <button
+              type="submit"
+              className="bg-brand text-brand-foreground px-8 py-3 rounded-[18px] font-medium text-sm ring-1 ring-brand"
+            >
               Search Spaces
             </button>
           </form>
@@ -88,7 +129,10 @@ function HomePage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex justify-between items-end mb-10">
             <h2 className="font-serif text-3xl">Featured Collections</h2>
-            <Link to="/venues" className="text-sm font-medium border-b border-lead/10 hover:border-brand transition-colors">
+            <Link
+              to="/venues"
+              className="text-sm font-medium border-b border-lead/10 hover:border-brand transition-colors"
+            >
               View all venues
             </Link>
           </div>
@@ -132,12 +176,23 @@ function HomePage() {
       <section className="py-24 bg-white ring-1 ring-black/5">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-12">
           {[
-            { title: "Discover", body: "Browse curated venues for every occasion — weddings, conferences, parties, celebrations." },
-            { title: "Reserve", body: "Pick a date and time, apply coupons, and lock the space with a soft hold while you confirm." },
-            { title: "Celebrate", body: "Receive confirmation, host your event, and your space comes through as promised." },
+            {
+              title: "Discover",
+              body: "Browse curated venues for every occasion — weddings, conferences, parties, celebrations.",
+            },
+            {
+              title: "Reserve",
+              body: "Pick a date and time, apply coupons, and lock the space with a soft hold while you confirm.",
+            },
+            {
+              title: "Celebrate",
+              body: "Receive confirmation, host your event, and your space comes through as promised.",
+            },
           ].map((s, i) => (
             <div key={s.title}>
-              <div className="text-[10px] uppercase tracking-widest text-brand font-semibold mb-3">Step {i + 1}</div>
+              <div className="text-[10px] uppercase tracking-widest text-brand font-semibold mb-3">
+                Step {i + 1}
+              </div>
               <h3 className="font-serif text-2xl mb-2">{s.title}</h3>
               <p className="text-sm text-lead/60">{s.body}</p>
             </div>

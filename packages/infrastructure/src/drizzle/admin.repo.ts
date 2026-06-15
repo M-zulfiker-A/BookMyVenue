@@ -1,6 +1,20 @@
 // Drizzle implementation of AdminRepo
 
-import { eq, and, or, like, inArray, lt, gt, desc, sql, count, sum, isNotNull, notExists } from "drizzle-orm";
+import {
+  eq,
+  and,
+  or,
+  like,
+  inArray,
+  lt,
+  gt,
+  desc,
+  sql,
+  count,
+  sum,
+  isNotNull,
+  notExists,
+} from "drizzle-orm";
 import type {
   AdminBookingFilter,
   AdminBookingListItem,
@@ -14,7 +28,16 @@ import type {
   PlatformStats,
 } from "@repo/contracts";
 import type { BookingStatus } from "@repo/domain/bookings";
-import { profiles, userRoles, bookings, venues, payments, venueReviews, coupons, invoices } from "./schema";
+import {
+  profiles,
+  userRoles,
+  bookings,
+  venues,
+  payments,
+  venueReviews,
+  coupons,
+  invoices,
+} from "./schema";
 
 export function makeAdminRepo(deps: { adminDb: any }): AdminRepo {
   const db = deps.adminDb;
@@ -41,53 +64,74 @@ export function makeAdminRepo(deps: { adminDb: any }): AdminRepo {
       ] = await Promise.all([
         db.select({ val: count() }).from(profiles),
         db.select({ val: count() }).from(profiles).where(eq(profiles.isSuspended, true)),
-        db.select({ val: count() }).from(profiles).where(gt(profiles.created_at, sql`datetime('now', '-30 days')`)),
+        db
+          .select({ val: count() })
+          .from(profiles)
+          .where(gt(profiles.created_at, sql`datetime('now', '-30 days')`)),
         db.select({ val: count() }).from(userRoles).where(eq(userRoles.role, "host")),
         db.select({ val: count() }).from(userRoles).where(eq(userRoles.role, "admin")),
         db.select({ val: count() }).from(venues),
-        db.select({ val: count() }).from(venues).where(and(eq(venues.isActive, true), eq(venues.isSuspended, false))),
+        db
+          .select({ val: count() })
+          .from(venues)
+          .where(and(eq(venues.isActive, true), eq(venues.isSuspended, false))),
         db.select({ val: count() }).from(venues).where(eq(venues.isSuspended, true)),
         db.select({ val: count() }).from(bookings),
-        db.select({ val: count() }).from(bookings).where(gt(bookings.createdAt, sql`datetime('now', '-30 days')`)),
-        db.select({ val: count() }).from(bookings).where(
-          and(
-            eq(bookings.status, "pending"),
-            isNotNull(bookings.expiresAt),
-            lt(bookings.expiresAt, new Date().toISOString())
-          )
-        ),
-        db.select({ val: sum(payments.amountCents) }).from(payments).where(eq(payments.status, "success")),
-        db.select({ val: sum(payments.amountCents) }).from(payments).where(
-          and(
-            eq(payments.status, "success"),
-            gt(payments.createdAt, sql`datetime('now', '-30 days')`)
-          )
-        ),
-        db.select({ status: bookings.status, val: count() }).from(bookings).groupBy(bookings.status),
-        db.select({ val: count() }).from(bookings).where(
-          and(
-            eq(bookings.status, "confirmed"),
-            eq(bookings.source, "online"),
-            notExists(
-              db.select()
-                .from(payments)
-                .where(
-                  and(
-                    eq(payments.bookingId, bookings.id),
-                    eq(payments.status, "success")
-                  )
-                )
-            )
-          )
-        ),
-        db.select({
-          day: sql<string>`date(${bookings.createdAt})`,
-          count: count()
-        })
-        .from(bookings)
-        .where(gt(bookings.createdAt, sql`datetime('now', '-30 days')`))
-        .groupBy(sql`date(${bookings.createdAt})`)
-        .orderBy(sql`date(${bookings.createdAt})`),
+        db
+          .select({ val: count() })
+          .from(bookings)
+          .where(gt(bookings.createdAt, sql`datetime('now', '-30 days')`)),
+        db
+          .select({ val: count() })
+          .from(bookings)
+          .where(
+            and(
+              eq(bookings.status, "pending"),
+              isNotNull(bookings.expiresAt),
+              lt(bookings.expiresAt, new Date().toISOString()),
+            ),
+          ),
+        db
+          .select({ val: sum(payments.amountCents) })
+          .from(payments)
+          .where(eq(payments.status, "success")),
+        db
+          .select({ val: sum(payments.amountCents) })
+          .from(payments)
+          .where(
+            and(
+              eq(payments.status, "success"),
+              gt(payments.createdAt, sql`datetime('now', '-30 days')`),
+            ),
+          ),
+        db
+          .select({ status: bookings.status, val: count() })
+          .from(bookings)
+          .groupBy(bookings.status),
+        db
+          .select({ val: count() })
+          .from(bookings)
+          .where(
+            and(
+              eq(bookings.status, "confirmed"),
+              eq(bookings.source, "online"),
+              notExists(
+                db
+                  .select()
+                  .from(payments)
+                  .where(and(eq(payments.bookingId, bookings.id), eq(payments.status, "success"))),
+              ),
+            ),
+          ),
+        db
+          .select({
+            day: sql<string>`date(${bookings.createdAt})`,
+            count: count(),
+          })
+          .from(bookings)
+          .where(gt(bookings.createdAt, sql`datetime('now', '-30 days')`))
+          .groupBy(sql`date(${bookings.createdAt})`)
+          .orderBy(sql`date(${bookings.createdAt})`),
       ]);
 
       const statusMap: Record<string, number> = {};
@@ -119,11 +163,7 @@ export function makeAdminRepo(deps: { adminDb: any }): AdminRepo {
     },
 
     async listUsers(filter) {
-      let q = db
-        .select()
-        .from(profiles)
-        .orderBy(desc(profiles.created_at))
-        .limit(500);
+      let q = db.select().from(profiles).orderBy(desc(profiles.created_at)).limit(500);
 
       if (filter.search) {
         const searchPattern = `%${filter.search.toLowerCase()}%`;
@@ -131,8 +171,8 @@ export function makeAdminRepo(deps: { adminDb: any }): AdminRepo {
           or(
             like(sql`lower(${profiles.email})`, searchPattern),
             like(sql`lower(${profiles.firstName})`, searchPattern),
-            like(sql`lower(${profiles.lastName})`, searchPattern)
-          )
+            like(sql`lower(${profiles.lastName})`, searchPattern),
+          ),
         ) as any;
       }
 
@@ -141,10 +181,7 @@ export function makeAdminRepo(deps: { adminDb: any }): AdminRepo {
 
       let rolesRows: any[] = [];
       if (ids.length > 0) {
-        rolesRows = await db
-          .select()
-          .from(userRoles)
-          .where(inArray(userRoles.userId, ids));
+        rolesRows = await db.select().from(userRoles).where(inArray(userRoles.userId, ids));
       }
 
       const rolesByUser = new Map<string, AppRole[]>();
@@ -185,11 +222,7 @@ export function makeAdminRepo(deps: { adminDb: any }): AdminRepo {
           .where(eq(bookings.customerId, userId))
           .orderBy(desc(bookings.createdAt))
           .limit(50),
-        db
-          .select()
-          .from(venues)
-          .where(eq(venues.hostId, userId))
-          .orderBy(desc(venues.createdAt)),
+        db.select().from(venues).where(eq(venues.hostId, userId)).orderBy(desc(venues.createdAt)),
         db
           .select({
             review: venueReviews,
@@ -275,12 +308,7 @@ export function makeAdminRepo(deps: { adminDb: any }): AdminRepo {
       }
 
       if (filter.status === "active") {
-        q = q.where(
-          and(
-            eq(venues.isActive, true),
-            eq(venues.isSuspended, false)
-          )
-        ) as any;
+        q = q.where(and(eq(venues.isActive, true), eq(venues.isSuspended, false))) as any;
       } else if (filter.status === "inactive") {
         q = q.where(eq(venues.isActive, false)) as any;
       } else if (filter.status === "suspended") {
@@ -301,7 +329,10 @@ export function makeAdminRepo(deps: { adminDb: any }): AdminRepo {
         is_active: Boolean(r.venue.isActive),
         is_suspended: Boolean(r.venue.isSuspended),
         created_at: r.venue.createdAt,
-        address_data: typeof r.venue.addressData === "string" ? JSON.parse(r.venue.addressData) : r.venue.addressData,
+        address_data:
+          typeof r.venue.addressData === "string"
+            ? JSON.parse(r.venue.addressData)
+            : r.venue.addressData,
         cover_image_url: r.venue.coverImageUrl ?? null,
         host: r.host
           ? {
@@ -351,10 +382,7 @@ export function makeAdminRepo(deps: { adminDb: any }): AdminRepo {
 
       if (filter.discrepancy === "stuck_pending") {
         q = q.where(
-          and(
-            eq(bookings.status, "pending"),
-            lt(bookings.expiresAt, new Date().toISOString())
-          )
+          and(eq(bookings.status, "pending"), lt(bookings.expiresAt, new Date().toISOString())),
         ) as any;
       }
 
@@ -417,7 +445,7 @@ export function makeAdminRepo(deps: { adminDb: any }): AdminRepo {
           (b) =>
             b.status === "confirmed" &&
             b.source === "online" &&
-            !(b.payments ?? []).some((p) => p.status === "success" || p.status === "succeeded")
+            !(b.payments ?? []).some((p) => p.status === "success" || p.status === "succeeded"),
         );
       }
 
@@ -427,7 +455,7 @@ export function makeAdminRepo(deps: { adminDb: any }): AdminRepo {
           (b) =>
             (b.guest_email ?? "").toLowerCase().includes(s) ||
             (b.customer?.email ?? "").toLowerCase().includes(s) ||
-            (b.venues?.name ?? "").toLowerCase().includes(s)
+            (b.venues?.name ?? "").toLowerCase().includes(s),
         );
       }
 
@@ -446,12 +474,7 @@ export function makeAdminRepo(deps: { adminDb: any }): AdminRepo {
       const affected = await db
         .select({ id: bookings.id })
         .from(bookings)
-        .where(
-          and(
-            eq(bookings.status, "pending"),
-            lt(bookings.expiresAt, nowIso)
-          )
-        );
+        .where(and(eq(bookings.status, "pending"), lt(bookings.expiresAt, nowIso)));
 
       if (affected.length === 0) return 0;
 
@@ -461,12 +484,7 @@ export function makeAdminRepo(deps: { adminDb: any }): AdminRepo {
           status: "expired",
           updatedAt: new Date().toISOString(),
         })
-        .where(
-          and(
-            eq(bookings.status, "pending"),
-            lt(bookings.expiresAt, nowIso)
-          )
-        );
+        .where(and(eq(bookings.status, "pending"), lt(bookings.expiresAt, nowIso)));
 
       return affected.length;
     },

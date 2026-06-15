@@ -10,7 +10,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { VENUE_TYPES, type VenueType } from "@/lib/format";
 import { PRICING_MODES, pricingUnitLabel, type PricingMode } from "@repo/domain/venues";
 import { toast } from "sonner";
@@ -29,10 +35,18 @@ function EditVenuePage() {
   });
 
   const [form, setForm] = useState<{
-    name: string; description: string; venue_type: VenueType; capacity: number;
-    price: number; currency: string; pricing_mode: PricingMode;
-    city: string; state: string; country: string;
-    amenities: string; is_active: boolean;
+    name: string;
+    description: string;
+    venue_type: VenueType;
+    capacity: number;
+    price: number;
+    currency: string;
+    pricing_mode: PricingMode;
+    city: string;
+    state: string;
+    country: string;
+    amenities: string;
+    is_active: boolean;
   } | null>(null);
 
   useEffect(() => {
@@ -49,7 +63,9 @@ function EditVenuePage() {
       price: venue.base_price_cents / 100,
       currency: venue.currency,
       pricing_mode: (venue.pricing_mode ?? "per_hour") as PricingMode,
-      city: a.city ?? "", state: a.state ?? "", country: a.country ?? "",
+      city: a.city ?? "",
+      state: a.state ?? "",
+      country: a.country ?? "",
       amenities: amens.join(", "),
       is_active: venue.is_active,
     });
@@ -69,7 +85,10 @@ function EditVenuePage() {
           currency: form.currency,
           pricing_mode: form.pricing_mode,
           address_data: { city: form.city, state: form.state, country: form.country },
-          amenities: form.amenities.split(",").map((s) => s.trim()).filter(Boolean),
+          amenities: form.amenities
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean),
           is_active: form.is_active,
         },
       });
@@ -86,62 +105,150 @@ function EditVenuePage() {
   return (
     <div className="max-w-2xl">
       <h2 className="font-serif text-2xl mb-6">Edit venue</h2>
-      <form onSubmit={(e) => { e.preventDefault(); update.mutate(); }} className="space-y-5 bg-white ring-1 ring-black/5 rounded-2xl p-6">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          update.mutate();
+        }}
+        className="space-y-5 bg-white ring-1 ring-black/5 rounded-2xl p-6"
+      >
         <div>
           <Label htmlFor="name">Name</Label>
-          <Input id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+          <Input
+            id="name"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            required
+          />
         </div>
         <div>
           <Label htmlFor="description">Description</Label>
-          <Textarea id="description" rows={4} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+          <Textarea
+            id="description"
+            rows={4}
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+          />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label>Venue type</Label>
-            <Select value={form.venue_type} onValueChange={(v) => setForm({ ...form, venue_type: v as VenueType })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>{VENUE_TYPES.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
+            <Select
+              value={form.venue_type}
+              onValueChange={(v) => setForm({ ...form, venue_type: v as VenueType })}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {VENUE_TYPES.map((t) => (
+                  <SelectItem key={t.value} value={t.value}>
+                    {t.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
           </div>
           <div>
             <Label htmlFor="capacity">Capacity</Label>
-            <Input id="capacity" type="number" min={1} value={form.capacity} onChange={(e) => setForm({ ...form, capacity: Number(e.target.value) })} />
+            <Input
+              id="capacity"
+              type="number"
+              min={1}
+              value={form.capacity}
+              onChange={(e) => setForm({ ...form, capacity: Number(e.target.value) })}
+            />
           </div>
         </div>
         <div className="grid grid-cols-3 gap-4">
           <div>
             <Label>Pricing mode</Label>
-            <Select value={form.pricing_mode} onValueChange={(v) => setForm({ ...form, pricing_mode: v as PricingMode })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>{PRICING_MODES.map((m) => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}</SelectContent>
+            <Select
+              value={form.pricing_mode}
+              onValueChange={(v) => setForm({ ...form, pricing_mode: v as PricingMode })}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PRICING_MODES.map((m) => (
+                  <SelectItem key={m.value} value={m.value}>
+                    {m.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
           </div>
           <div>
             <Label htmlFor="price">Price ({pricingUnitLabel(form.pricing_mode)})</Label>
-            <Input id="price" type="number" min={0} step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} />
+            <Input
+              id="price"
+              type="number"
+              min={0}
+              step="0.01"
+              value={form.price}
+              onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
+            />
           </div>
           <div>
             <Label htmlFor="currency">Currency</Label>
-            <Input id="currency" maxLength={3} value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value.toUpperCase() })} />
+            <Input
+              id="currency"
+              maxLength={3}
+              value={form.currency}
+              onChange={(e) => setForm({ ...form, currency: e.target.value.toUpperCase() })}
+            />
           </div>
         </div>
         <div className="grid grid-cols-3 gap-4">
-          <div><Label htmlFor="city">City</Label><Input id="city" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} /></div>
-          <div><Label htmlFor="state">State</Label><Input id="state" value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} /></div>
-          <div><Label htmlFor="country">Country</Label><Input id="country" value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} /></div>
+          <div>
+            <Label htmlFor="city">City</Label>
+            <Input
+              id="city"
+              value={form.city}
+              onChange={(e) => setForm({ ...form, city: e.target.value })}
+            />
+          </div>
+          <div>
+            <Label htmlFor="state">State</Label>
+            <Input
+              id="state"
+              value={form.state}
+              onChange={(e) => setForm({ ...form, state: e.target.value })}
+            />
+          </div>
+          <div>
+            <Label htmlFor="country">Country</Label>
+            <Input
+              id="country"
+              value={form.country}
+              onChange={(e) => setForm({ ...form, country: e.target.value })}
+            />
+          </div>
         </div>
         <div>
           <Label htmlFor="amen">Amenities (comma-separated)</Label>
-          <Input id="amen" value={form.amenities} onChange={(e) => setForm({ ...form, amenities: e.target.value })} />
+          <Input
+            id="amen"
+            value={form.amenities}
+            onChange={(e) => setForm({ ...form, amenities: e.target.value })}
+          />
         </div>
         <div className="flex items-center justify-between rounded-lg bg-stone-50 p-4">
           <div>
             <p className="font-medium text-sm">Active listing</p>
             <p className="text-xs text-lead/50">Toggle off to hide from public search.</p>
           </div>
-          <Switch checked={form.is_active} onCheckedChange={(v) => setForm({ ...form, is_active: v })} />
+          <Switch
+            checked={form.is_active}
+            onCheckedChange={(v) => setForm({ ...form, is_active: v })}
+          />
         </div>
-        <Button type="submit" disabled={update.isPending} className="w-full rounded-full bg-brand text-brand-foreground hover:bg-brand/90">
+        <Button
+          type="submit"
+          disabled={update.isPending}
+          className="w-full rounded-full bg-brand text-brand-foreground hover:bg-brand/90"
+        >
           {update.isPending ? "Saving…" : "Save changes"}
         </Button>
       </form>

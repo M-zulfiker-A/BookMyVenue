@@ -20,7 +20,11 @@ export default function VenueDetail() {
     <SafeAreaView className="flex-1 bg-surface">
       <ScrollView contentContainerClassName="pb-10">
         {venue.cover_image_url && (
-          <Image source={{ uri: venue.cover_image_url }} className="w-full h-64" resizeMode="cover" />
+          <Image
+            source={{ uri: venue.cover_image_url }}
+            className="w-full h-64"
+            resizeMode="cover"
+          />
         )}
         <View className="p-5 gap-5">
           <View className="gap-1">

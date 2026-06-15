@@ -49,13 +49,17 @@ export const cancelBooking = createServerFn({ method: "POST" })
 export const listMyBookings = createServerFn({ method: "GET" })
   .middleware([requireAuth])
   .handler(({ context }) =>
-    buildContainer({ db: context.db, userId: context.userId }).resolve(T.ListMyBookings)(context.userId),
+    buildContainer({ db: context.db, userId: context.userId }).resolve(T.ListMyBookings)(
+      context.userId,
+    ),
   );
 
 export const listHostBookings = createServerFn({ method: "GET" })
   .middleware([requireAuth])
   .handler(({ context }) =>
-    buildContainer({ db: context.db, userId: context.userId }).resolve(T.ListHostBookings)(context.userId),
+    buildContainer({ db: context.db, userId: context.userId }).resolve(T.ListHostBookings)(
+      context.userId,
+    ),
   );
 
 const GetBookingSchema = z
@@ -74,7 +78,9 @@ export const createOfflineBooking = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .inputValidator((input: unknown) => OfflineBookingSchema.parse(input))
   .handler(({ data, context }) =>
-    buildContainer({ db: context.db, userId: context.userId }).resolve(T.CreateOfflineBooking)(data),
+    buildContainer({ db: context.db, userId: context.userId }).resolve(T.CreateOfflineBooking)(
+      data,
+    ),
   );
 
 export const createBlockOff = createServerFn({ method: "POST" })

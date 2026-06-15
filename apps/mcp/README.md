@@ -38,8 +38,8 @@ python server.py
 
 ## Tool
 
-| Name | Args | Returns |
-| --- | --- | --- |
+| Name         | Args                                                                                             | Returns                            |
+| ------------ | ------------------------------------------------------------------------------------------------ | ---------------------------------- |
 | `get_venues` | `search?`, `venue_type?` (`wedding`/`conference`/`party`/`celebration`/`other`), `min_capacity?` | `{ venues: [...], count: number }` |
 
 The widget reads `window.openai.toolOutput.venues` and renders a responsive

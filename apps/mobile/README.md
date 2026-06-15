@@ -30,22 +30,22 @@ React Native app that reuses the monorepo's business logic
 
 ## What's shared with the web app
 
-| Package                 | Purpose                                               |
-| ----------------------- | ----------------------------------------------------- |
-| `@repo/domain`          | Entities, value objects, pricing rules                |
-| `@repo/application`     | Use-cases (quoteBooking, listVenues, …)               |
-| `@repo/contracts`       | Ports: `AuthProvider`, `StorageProvider`, repos, …    |
-| `@repo/infrastructure`  | Supabase adapters (auth, storage, db, repos)          |
-| `@repo/ui-tokens`       | Color, radius, spacing, font tokens (web + mobile)    |
+| Package                | Purpose                                            |
+| ---------------------- | -------------------------------------------------- |
+| `@repo/domain`         | Entities, value objects, pricing rules             |
+| `@repo/application`    | Use-cases (quoteBooking, listVenues, …)            |
+| `@repo/contracts`      | Ports: `AuthProvider`, `StorageProvider`, repos, … |
+| `@repo/infrastructure` | Supabase adapters (auth, storage, db, repos)       |
+| `@repo/ui-tokens`      | Color, radius, spacing, font tokens (web + mobile) |
 
 ## What's mobile-only
 
-| Path                                          | Why                                |
-| --------------------------------------------- | ---------------------------------- |
-| `src/integrations/supabase.ts`                | RN client (AsyncStorage session)   |
-| `src/infrastructure/providers.native.ts`      | Native provider singletons         |
-| `app/**`                                      | Expo Router screens                |
-| `components/ui.tsx`                           | RN equivalents of shadcn primitives |
+| Path                                     | Why                                 |
+| ---------------------------------------- | ----------------------------------- |
+| `src/integrations/supabase.ts`           | RN client (AsyncStorage session)    |
+| `src/infrastructure/providers.native.ts` | Native provider singletons          |
+| `app/**`                                 | Expo Router screens                 |
+| `components/ui.tsx`                      | RN equivalents of shadcn primitives |
 
 ## Swapping providers
 
@@ -56,12 +56,12 @@ See `packages/infrastructure/README.md` for adapter options
 
 ## Screen ↔ web route mapping
 
-| Web route                                   | Mobile screen                          |
-| ------------------------------------------- | -------------------------------------- |
-| `/`                                         | `app/index.tsx`                        |
-| `/login`, `/signup`                         | `app/login.tsx`, `app/signup.tsx`      |
-| `/venues`, `/venues/:venueId`               | `app/venues/index.tsx`, `app/venues/[id].tsx` |
-| `/_authenticated/account/bookings`          | `app/(auth)/account/bookings.tsx`     |
+| Web route                          | Mobile screen                                 |
+| ---------------------------------- | --------------------------------------------- |
+| `/`                                | `app/index.tsx`                               |
+| `/login`, `/signup`                | `app/login.tsx`, `app/signup.tsx`             |
+| `/venues`, `/venues/:venueId`      | `app/venues/index.tsx`, `app/venues/[id].tsx` |
+| `/_authenticated/account/bookings` | `app/(auth)/account/bookings.tsx`             |
 
 Host flows (`/_authenticated/host/*`) can follow the same pattern when
 needed — copy from the web routes and replace HTML/shadcn with the RN

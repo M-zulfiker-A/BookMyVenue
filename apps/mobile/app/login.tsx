@@ -36,14 +36,23 @@ export default function LoginScreen() {
         <View className="gap-3">
           <View>
             <Label>Email</Label>
-            <Input value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
+            <Input
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+            />
           </View>
           <View>
             <Label>Password</Label>
             <Input value={password} onChangeText={setPassword} secureTextEntry />
           </View>
-          <Button onPress={submit} disabled={loading}>{loading ? "Signing in…" : "Sign in"}</Button>
-          <Button variant="ghost" onPress={() => router.push("/signup")}>Create an account</Button>
+          <Button onPress={submit} disabled={loading}>
+            {loading ? "Signing in…" : "Sign in"}
+          </Button>
+          <Button variant="ghost" onPress={() => router.push("/signup")}>
+            Create an account
+          </Button>
         </View>
       </View>
     </SafeAreaView>

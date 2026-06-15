@@ -53,7 +53,8 @@ function mapBookingRow(row: any): BookingWithVenue {
     venues: v
       ? {
           name: v.name,
-          address_data: typeof v.addressData === "string" ? JSON.parse(v.addressData) : v.addressData,
+          address_data:
+            typeof v.addressData === "string" ? JSON.parse(v.addressData) : v.addressData,
           cover_image_url: v.coverImageUrl ?? null,
           host_id: v.hostId ?? null,
         }
@@ -100,8 +101,8 @@ export function makeBookingsRepo(deps: { adminDb: any; userDb?: any }): Bookings
             eq(bookings.venueId, venue_id),
             inArray(bookings.status, ["pending", "confirmed"]),
             lt(bookings.startTime, end_time),
-            gt(bookings.endTime, start_time)
-          )
+            gt(bookings.endTime, start_time),
+          ),
         );
 
       return rows.map((r: any) => ({

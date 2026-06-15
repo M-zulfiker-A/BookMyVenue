@@ -33,23 +33,50 @@ function AdminCoupons() {
           </tr>
         </thead>
         <tbody className="divide-y divide-zinc-950/5">
-          {isLoading && <tr><td colSpan={6} className="px-4 py-6 text-center text-lead/50">Loading…</td></tr>}
+          {isLoading && (
+            <tr>
+              <td colSpan={6} className="px-4 py-6 text-center text-lead/50">
+                Loading…
+              </td>
+            </tr>
+          )}
           {data.map((c) => (
             <tr key={c.id}>
               <td className="px-4 py-3 font-medium">{c.code}</td>
               <td className="px-4 py-3 text-xs">{c.venues?.name ?? "Any"}</td>
-              <td className="px-4 py-3 text-xs">{c.discount_type === "percentage" ? `${c.discount_value}%` : `${c.discount_value} off`}</td>
-              <td className="px-4 py-3 text-xs">{c.times_used}{c.usage_limit ? ` / ${c.usage_limit}` : ""}</td>
-              <td className="px-4 py-3 text-xs">{c.is_active ? <span className="text-emerald-700">Active</span> : <span className="text-lead/50">Inactive</span>}</td>
+              <td className="px-4 py-3 text-xs">
+                {c.discount_type === "percentage"
+                  ? `${c.discount_value}%`
+                  : `${c.discount_value} off`}
+              </td>
+              <td className="px-4 py-3 text-xs">
+                {c.times_used}
+                {c.usage_limit ? ` / ${c.usage_limit}` : ""}
+              </td>
+              <td className="px-4 py-3 text-xs">
+                {c.is_active ? (
+                  <span className="text-emerald-700">Active</span>
+                ) : (
+                  <span className="text-lead/50">Inactive</span>
+                )}
+              </td>
               <td className="px-4 py-3 text-right">
-                <Button size="sm" variant={c.is_active ? "destructive" : "default"} onClick={() => toggle(c.id, c.is_active)}>
+                <Button
+                  size="sm"
+                  variant={c.is_active ? "destructive" : "default"}
+                  onClick={() => toggle(c.id, c.is_active)}
+                >
                   {c.is_active ? "Deactivate" : "Activate"}
                 </Button>
               </td>
             </tr>
           ))}
           {!isLoading && data.length === 0 && (
-            <tr><td colSpan={6} className="px-4 py-8 text-center text-lead/50">No coupons.</td></tr>
+            <tr>
+              <td colSpan={6} className="px-4 py-8 text-center text-lead/50">
+                No coupons.
+              </td>
+            </tr>
           )}
         </tbody>
       </table>

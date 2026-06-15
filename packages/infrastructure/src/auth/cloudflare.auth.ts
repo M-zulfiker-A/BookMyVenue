@@ -28,9 +28,7 @@ export interface CloudflareAccessConfig {
   audience: string;
 }
 
-export function makeCloudflareAccessAuthProvider(
-  _cfg: CloudflareAccessConfig,
-): AuthProvider {
+export function makeCloudflareAccessAuthProvider(_cfg: CloudflareAccessConfig): AuthProvider {
   // TODO: import { createRemoteJWKSet, jwtVerify } from "jose";
   // const jwks = createRemoteJWKSet(
   //   new URL(`https://${_cfg.teamDomain}/cdn-cgi/access/certs`),
@@ -38,7 +36,9 @@ export function makeCloudflareAccessAuthProvider(
 
   return {
     async signInWithPassword() {
-      throw new Error("Cloudflare Access manages sign-in via its IdP — redirect to /cdn-cgi/access/login");
+      throw new Error(
+        "Cloudflare Access manages sign-in via its IdP — redirect to /cdn-cgi/access/login",
+      );
     },
     async signUp() {
       throw new Error("Cloudflare Access does not support self-service signup");
@@ -47,10 +47,13 @@ export function makeCloudflareAccessAuthProvider(
       // window.location.href = `/cdn-cgi/access/login/${appAud}`;
       return { redirected: true };
     },
-    async resetPasswordForEmail() { throw new Error("Cloudflare Access: resetPasswordForEmail not implemented (sample)"); },
-    async updatePassword() { throw new Error("Cloudflare Access: updatePassword not implemented (sample)"); },
+    async resetPasswordForEmail() {
+      throw new Error("Cloudflare Access: resetPasswordForEmail not implemented (sample)");
+    },
+    async updatePassword() {
+      throw new Error("Cloudflare Access: updatePassword not implemented (sample)");
+    },
     async signOut() {
-
       // window.location.href = `https://${_cfg.teamDomain}/cdn-cgi/access/logout`;
     },
     async getSession(): Promise<AuthSession | null> {

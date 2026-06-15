@@ -25,7 +25,8 @@ export default function AccountBookings() {
             <Card>
               <H2>{(item as { venue_name?: string }).venue_name ?? "Venue"}</H2>
               <P className="opacity-60 text-sm mt-1">
-                {new Date(item.start_time).toLocaleString()} → {new Date(item.end_time).toLocaleString()}
+                {new Date(item.start_time).toLocaleString()} →{" "}
+                {new Date(item.end_time).toLocaleString()}
               </P>
               <P className="mt-2">Status: {item.status}</P>
               <P>

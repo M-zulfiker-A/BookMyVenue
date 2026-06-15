@@ -25,7 +25,11 @@ export default function VenuesList() {
             <Link href={{ pathname: "/venues/[id]", params: { id: item.id } }} asChild>
               <Card className="p-0 overflow-hidden">
                 {item.cover_image_url && (
-                  <Image source={{ uri: item.cover_image_url }} className="w-full h-48" resizeMode="cover" />
+                  <Image
+                    source={{ uri: item.cover_image_url }}
+                    className="w-full h-48"
+                    resizeMode="cover"
+                  />
                 )}
                 <View className="p-4 gap-1">
                   <H2>{item.name}</H2>

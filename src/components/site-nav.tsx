@@ -24,14 +24,22 @@ export function SiteNav() {
   return (
     <nav className="sticky top-0 z-50 bg-surface/80 backdrop-blur-md ring-1 ring-black/5">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="font-serif text-2xl tracking-tight">Book My Venue</Link>
+        <Link to="/" className="font-serif text-2xl tracking-tight">
+          Book My Venue
+        </Link>
         <div className="flex items-center gap-8 text-sm font-medium text-lead/70">
-          <Link to="/venues" className="hover:text-brand transition-colors hidden sm:inline">Browse Venues</Link>
+          <Link to="/venues" className="hover:text-brand transition-colors hidden sm:inline">
+            Browse Venues
+          </Link>
           {user && isHost && (
-            <Link to="/host" className="hover:text-brand transition-colors hidden sm:inline">Host</Link>
+            <Link to="/host" className="hover:text-brand transition-colors hidden sm:inline">
+              Host
+            </Link>
           )}
           {user && isAdmin && (
-            <Link to="/admin" className="hover:text-brand transition-colors hidden sm:inline">Admin</Link>
+            <Link to="/admin" className="hover:text-brand transition-colors hidden sm:inline">
+              Admin
+            </Link>
           )}
           {loading ? null : user ? (
             <DropdownMenu>
@@ -67,8 +75,14 @@ export function SiteNav() {
             </DropdownMenu>
           ) : (
             <div className="flex items-center gap-3">
-              <Link to="/login" className="text-sm hover:text-brand">Sign in</Link>
-              <Button asChild size="sm" className="rounded-full bg-lead text-surface hover:bg-lead/90">
+              <Link to="/login" className="text-sm hover:text-brand">
+                Sign in
+              </Link>
+              <Button
+                asChild
+                size="sm"
+                className="rounded-full bg-lead text-surface hover:bg-lead/90"
+              >
                 <Link to="/signup">Get started</Link>
               </Button>
             </div>
@@ -85,9 +99,15 @@ export function SiteFooter() {
       <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-lead/40">
         <p>&copy; {new Date().getFullYear()} Book My Venue Spaces.</p>
         <div className="flex gap-8">
-          <a href="#" className="hover:text-lead transition-colors">Terms</a>
-          <a href="#" className="hover:text-lead transition-colors">Privacy</a>
-          <a href="#" className="hover:text-lead transition-colors">Support</a>
+          <a href="#" className="hover:text-lead transition-colors">
+            Terms
+          </a>
+          <a href="#" className="hover:text-lead transition-colors">
+            Privacy
+          </a>
+          <a href="#" className="hover:text-lead transition-colors">
+            Support
+          </a>
         </div>
       </div>
     </footer>

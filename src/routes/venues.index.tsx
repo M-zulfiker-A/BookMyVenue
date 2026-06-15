@@ -74,8 +74,12 @@ function VenuesPage() {
   ]);
 
   // Sync local state when URL changes externally
-  useEffect(() => { setQInput(search.q ?? ""); }, [search.q]);
-  useEffect(() => { setCityInput(search.city ?? ""); }, [search.city]);
+  useEffect(() => {
+    setQInput(search.q ?? "");
+  }, [search.q]);
+  useEffect(() => {
+    setCityInput(search.city ?? "");
+  }, [search.city]);
   useEffect(() => {
     setPriceRange([search.pmin ?? PRICE_MIN, search.pmax ?? PRICE_MAX]);
   }, [search.pmin, search.pmax]);
@@ -108,18 +112,19 @@ function VenuesPage() {
 
   const { data: venues = [], isLoading } = useQuery({
     queryKey: ["venues", search],
-    queryFn: () => listVenues({
-      data: {
-        search: search.q,
-        venue_type: search.type as VenueType | undefined,
-        min_capacity: search.min,
-        max_capacity: search.max,
-        min_price_cents: search.pmin !== undefined ? search.pmin * 100 : undefined,
-        max_price_cents: search.pmax !== undefined ? search.pmax * 100 : undefined,
-        city: search.city,
-        pricing_mode: search.mode as PricingMode | undefined,
-      },
-    }),
+    queryFn: () =>
+      listVenues({
+        data: {
+          search: search.q,
+          venue_type: search.type as VenueType | undefined,
+          min_capacity: search.min,
+          max_capacity: search.max,
+          min_price_cents: search.pmin !== undefined ? search.pmin * 100 : undefined,
+          max_price_cents: search.pmax !== undefined ? search.pmax * 100 : undefined,
+          city: search.city,
+          pricing_mode: search.mode as PricingMode | undefined,
+        },
+      }),
   });
 
   const clearAll = () => {
@@ -130,8 +135,13 @@ function VenuesPage() {
   };
 
   const hasFilters =
-    !!search.q || !!search.type || !!search.min || !!search.max ||
-    !!search.city || search.pmin !== undefined || search.pmax !== undefined ||
+    !!search.q ||
+    !!search.type ||
+    !!search.min ||
+    !!search.max ||
+    !!search.city ||
+    search.pmin !== undefined ||
+    search.pmax !== undefined ||
     !!search.mode;
 
   return (
@@ -141,14 +151,18 @@ function VenuesPage() {
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="mb-8">
           <h1 className="font-serif text-4xl mb-2">All venues</h1>
-          <p className="text-sm text-lead/60">{venues.length} space{venues.length === 1 ? "" : "s"} available</p>
+          <p className="text-sm text-lead/60">
+            {venues.length} space{venues.length === 1 ? "" : "s"} available
+          </p>
         </div>
 
         <div className="grid lg:grid-cols-[280px_1fr] gap-8">
           {/* Filters sidebar */}
           <aside className="bg-white ring-1 ring-black/5 rounded-[20px] p-6 h-fit lg:sticky lg:top-24 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm uppercase tracking-widest font-semibold text-lead/60">Filters</h2>
+              <h2 className="text-sm uppercase tracking-widest font-semibold text-lead/60">
+                Filters
+              </h2>
               {hasFilters && (
                 <button onClick={clearAll} className="text-xs text-brand hover:underline">
                   Clear all
@@ -157,7 +171,12 @@ function VenuesPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="search" className="text-[10px] uppercase tracking-wider text-lead/50 font-bold">Search</Label>
+              <Label
+                htmlFor="search"
+                className="text-[10px] uppercase tracking-wider text-lead/50 font-bold"
+              >
+                Search
+              </Label>
               <Input
                 id="search"
                 placeholder="Venue name…"
@@ -167,7 +186,12 @@ function VenuesPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="city" className="text-[10px] uppercase tracking-wider text-lead/50 font-bold">City</Label>
+              <Label
+                htmlFor="city"
+                className="text-[10px] uppercase tracking-wider text-lead/50 font-bold"
+              >
+                City
+              </Label>
               <Input
                 id="city"
                 placeholder="e.g. Kochi"
@@ -177,7 +201,9 @@ function VenuesPage() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-wider text-lead/50 font-bold">Venue type</Label>
+              <Label className="text-[10px] uppercase tracking-wider text-lead/50 font-bold">
+                Venue type
+              </Label>
               <Select
                 value={search.type ?? "all"}
                 onValueChange={(v) =>
@@ -189,18 +215,24 @@ function VenuesPage() {
                   })
                 }
               >
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All types</SelectItem>
                   {VENUE_TYPES.map((t) => (
-                    <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                    <SelectItem key={t.value} value={t.value}>
+                      {t.label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-wider text-lead/50 font-bold">Pricing mode</Label>
+              <Label className="text-[10px] uppercase tracking-wider text-lead/50 font-bold">
+                Pricing mode
+              </Label>
               <Select
                 value={search.mode ?? "any"}
                 onValueChange={(v) =>
@@ -212,11 +244,15 @@ function VenuesPage() {
                   })
                 }
               >
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="any">Any</SelectItem>
                   {PRICING_MODES.map((m) => (
-                    <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                    <SelectItem key={m.value} value={m.value}>
+                      {m.label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -224,9 +260,12 @@ function VenuesPage() {
 
             <div className="space-y-3">
               <div className="flex justify-between items-baseline">
-                <Label className="text-[10px] uppercase tracking-wider text-lead/50 font-bold">Price range</Label>
+                <Label className="text-[10px] uppercase tracking-wider text-lead/50 font-bold">
+                  Price range
+                </Label>
                 <span className="text-xs text-lead/60">
-                  ${priceRange[0]} – ${priceRange[1]}{priceRange[1] === PRICE_MAX ? "+" : ""}
+                  ${priceRange[0]} – ${priceRange[1]}
+                  {priceRange[1] === PRICE_MAX ? "+" : ""}
                 </span>
               </div>
               <Slider
@@ -240,7 +279,9 @@ function VenuesPage() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-wider text-lead/50 font-bold">Capacity (guests)</Label>
+              <Label className="text-[10px] uppercase tracking-wider text-lead/50 font-bold">
+                Capacity (guests)
+              </Label>
               <div className="grid grid-cols-2 gap-2">
                 <Input
                   type="number"
@@ -279,7 +320,9 @@ function VenuesPage() {
             ) : venues.length === 0 ? (
               <div className="bg-white ring-1 ring-black/5 rounded-[20px] p-12 text-center">
                 <h3 className="font-serif text-2xl mb-2">No matches</h3>
-                <p className="text-sm text-lead/60">Try adjusting your filters or list the first venue yourself.</p>
+                <p className="text-sm text-lead/60">
+                  Try adjusting your filters or list the first venue yourself.
+                </p>
               </div>
             ) : (
               <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-8">
@@ -299,10 +342,15 @@ function VenuesPage() {
                       />
                     </div>
                     <h3 className="font-medium text-lg">{v.name}</h3>
-                    <p className="text-sm text-lead/50 mb-2">Up to {v.capacity} guests · {formatAddress(v.address_data)}</p>
+                    <p className="text-sm text-lead/50 mb-2">
+                      Up to {v.capacity} guests · {formatAddress(v.address_data)}
+                    </p>
                     <p className="text-sm font-medium">
                       From {formatMoney(v.base_price_cents, v.currency)}
-                      <span className="text-lead/40 font-normal"> · {pricingUnitLabel((v.pricing_mode ?? "per_hour") as PricingMode)}</span>
+                      <span className="text-lead/40 font-normal">
+                        {" "}
+                        · {pricingUnitLabel((v.pricing_mode ?? "per_hour") as PricingMode)}
+                      </span>
                     </p>
                   </Link>
                 ))}

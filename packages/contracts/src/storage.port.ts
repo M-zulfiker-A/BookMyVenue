@@ -24,11 +24,7 @@ export interface StorageProvider {
   ): Promise<SignedUrl>;
 
   /** Pre-signed URL for downloading a private object. */
-  createSignedDownloadUrl(
-    bucket: string,
-    path: string,
-    expiresIn?: number,
-  ): Promise<SignedUrl>;
+  createSignedDownloadUrl(bucket: string, path: string, expiresIn?: number): Promise<SignedUrl>;
 
   /** Server-side direct upload (e.g. from a webhook handler). */
   upload(

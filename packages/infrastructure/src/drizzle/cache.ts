@@ -23,13 +23,13 @@ export function makeDrizzleCacheStore(deps: { adminDb: any }): CacheStore {
         .limit(1);
 
       if (rows.length === 0) return null;
-      
+
       const row = rows[0];
       if (new Date(row.expiresAt).getTime() < Date.now()) {
         await adminDb.delete(apiCache).where(eq(apiCache.key, k));
         return null;
       }
-      
+
       return typeof row.payload === "string" ? JSON.parse(row.payload) : row.payload;
     },
 

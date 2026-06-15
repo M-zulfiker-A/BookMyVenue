@@ -46,17 +46,22 @@ function HostVenuesPage() {
       {venues.map((v) => (
         <div key={v.id} className="bg-white ring-1 ring-black/5 rounded-2xl overflow-hidden">
           <div className="aspect-[4/3] bg-stone-100">
-            {v.cover_image_url ? <img src={v.cover_image_url} alt={v.name} className="w-full h-full object-cover" /> : null}
+            {v.cover_image_url ? (
+              <img src={v.cover_image_url} alt={v.name} className="w-full h-full object-cover" />
+            ) : null}
           </div>
           <div className="p-5">
             <h3 className="font-medium text-lg">{v.name}</h3>
             <p className="text-sm text-lead/50 mb-2">{formatAddress(v.address_data)}</p>
             <p className="text-sm font-medium mb-4">
-              {formatMoney(v.base_price_cents, v.currency)} <span className="text-lead/40 font-normal">/ hour</span>
+              {formatMoney(v.base_price_cents, v.currency)}{" "}
+              <span className="text-lead/40 font-normal">/ hour</span>
             </p>
             <div className="flex gap-2">
               <Button asChild size="sm" variant="outline" className="rounded-full flex-1">
-                <Link to="/host/venues/$venueId/edit" params={{ venueId: v.id }}>Edit</Link>
+                <Link to="/host/venues/$venueId/edit" params={{ venueId: v.id }}>
+                  Edit
+                </Link>
               </Button>
               <Button
                 size="sm"
@@ -69,7 +74,9 @@ function HostVenuesPage() {
                 Delete
               </Button>
             </div>
-            <span className={`mt-3 inline-block text-[10px] uppercase tracking-widest font-bold rounded px-2 py-0.5 ${v.is_active ? "bg-green-100 text-green-700" : "bg-stone-100 text-stone-500"}`}>
+            <span
+              className={`mt-3 inline-block text-[10px] uppercase tracking-widest font-bold rounded px-2 py-0.5 ${v.is_active ? "bg-green-100 text-green-700" : "bg-stone-100 text-stone-500"}`}
+            >
               {v.is_active ? "Active" : "Hidden"}
             </span>
           </div>

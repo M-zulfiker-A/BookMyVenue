@@ -14,24 +14,29 @@ To run this application locally, you only need to use Cloudflare Wrangler.
 ### Step-by-Step Setup
 
 1. **Install Dependencies**
+
    ```bash
    npm install
    ```
 
 2. **Configure Environment Variables**
    Copy the example environment file:
+
    ```bash
    cp .env.example .env
    ```
+
    Generate a random string for `BETTER_AUTH_SECRET` (e.g., using `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`) and update it in your `.env` file.
 
 3. **Set Up the Local Database**
    Apply migrations to your local D1 database:
+
    ```bash
    npx wrangler d1 migrations apply book-my-venue-db --local
    ```
 
    Seed the local database with initial venue data:
+
    ```bash
    npm run db:seed
    ```

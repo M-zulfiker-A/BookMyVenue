@@ -43,7 +43,9 @@ function ForgotPasswordPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface px-4">
       <div className="w-full max-w-md">
-        <Link to="/" className="block text-center font-serif text-3xl mb-8">Book My Venue</Link>
+        <Link to="/" className="block text-center font-serif text-3xl mb-8">
+          Book My Venue
+        </Link>
         <div className="bg-white ring-1 ring-black/5 rounded-2xl p-8 shadow-xl shadow-zinc-950/5">
           <h1 className="font-serif text-3xl mb-1">Forgot password?</h1>
           <p className="text-sm text-lead/60 mb-6">
@@ -53,10 +55,12 @@ function ForgotPasswordPage() {
           {sent ? (
             <div className="space-y-4">
               <p className="text-sm text-lead/80">
-                If an account exists for <strong>{email}</strong>, you'll receive an
-                email with a link to reset your password.
+                If an account exists for <strong>{email}</strong>, you'll receive an email with a
+                link to reset your password.
               </p>
-              <Link to="/login" className="text-sm text-brand font-medium">← Back to sign in</Link>
+              <Link to="/login" className="text-sm text-brand font-medium">
+                ← Back to sign in
+              </Link>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -79,7 +83,9 @@ function ForgotPasswordPage() {
               </Button>
               <p className="text-sm text-center text-lead/60">
                 Remembered it?{" "}
-                <Link to="/login" className="text-brand font-medium">Sign in</Link>
+                <Link to="/login" className="text-brand font-medium">
+                  Sign in
+                </Link>
               </p>
             </form>
           )}

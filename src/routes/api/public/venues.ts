@@ -85,8 +85,11 @@ export const Route = createFileRoute("/api/public/venues")({
             });
           }
 
-          const venues = await container
-            .resolve(T.ListVenues)({ search, venue_type, min_capacity });
+          const venues = await container.resolve(T.ListVenues)({
+            search,
+            venue_type,
+            min_capacity,
+          });
           const payload = { venues };
 
           // fire-and-forget; we don't want cache write latency to slow the response

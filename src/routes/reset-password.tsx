@@ -74,7 +74,9 @@ function ResetPasswordPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface px-4">
       <div className="w-full max-w-md">
-        <Link to="/" className="block text-center font-serif text-3xl mb-8">Book My Venue</Link>
+        <Link to="/" className="block text-center font-serif text-3xl mb-8">
+          Book My Venue
+        </Link>
         <div className="bg-white ring-1 ring-black/5 rounded-2xl p-8 shadow-xl shadow-zinc-950/5">
           <h1 className="font-serif text-3xl mb-1">Reset password</h1>
 
@@ -84,9 +86,7 @@ function ResetPasswordPage() {
 
           {state === "invalid" && (
             <div className="mt-4 space-y-4">
-              <p className="text-sm text-lead/80">
-                This reset link is invalid or has expired.
-              </p>
+              <p className="text-sm text-lead/80">This reset link is invalid or has expired.</p>
               <Link to="/forgot-password" className="text-sm text-brand font-medium">
                 Request a new link
               </Link>

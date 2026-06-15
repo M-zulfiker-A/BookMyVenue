@@ -1,10 +1,6 @@
 // Application layer — Invoices use-cases
 
-import {
-  formatInvoiceNumber,
-  invoicePdfPath,
-  type Invoice,
-} from "@repo/domain/invoices";
+import { formatInvoiceNumber, invoicePdfPath, type Invoice } from "@repo/domain/invoices";
 import { pricingUnitLabel } from "@repo/domain/venues";
 import type { BookingWithVenue } from "@repo/contracts";
 import type {

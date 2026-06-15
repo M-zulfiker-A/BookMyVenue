@@ -25,12 +25,12 @@ src/
 
 ## Ports (in `@repo/contracts`)
 
-| Port              | Responsibility                                        |
-| ----------------- | ----------------------------------------------------- |
-| `AuthProvider`    | sign-in/up/out, sessions, OAuth, token verification   |
-| `StorageProvider` | object storage: upload, signed URLs, public URLs      |
-| `DbClientFactory` | produce admin + per-user query handles for repos      |
-| `VenuesRepo`, `BookingsRepo`, `CouponsRepo`, … | domain persistence |
+| Port                                           | Responsibility                                      |
+| ---------------------------------------------- | --------------------------------------------------- |
+| `AuthProvider`                                 | sign-in/up/out, sessions, OAuth, token verification |
+| `StorageProvider`                              | object storage: upload, signed URLs, public URLs    |
+| `DbClientFactory`                              | produce admin + per-user query handles for repos    |
+| `VenuesRepo`, `BookingsRepo`, `CouponsRepo`, … | domain persistence                                  |
 
 ## How to swap providers
 
@@ -43,13 +43,13 @@ that names a vendor. Replace the three factory calls and you're done:
 
 ```ts
 // Before (Lovable Cloud / Supabase)
-const dbFactory       = makeSupabaseDbFactory({ admin: supabaseAdmin });
-const authProvider    = makeSupabaseAuthProvider({ client: browserSupabase });
+const dbFactory = makeSupabaseDbFactory({ admin: supabaseAdmin });
+const authProvider = makeSupabaseAuthProvider({ client: browserSupabase });
 const storageProvider = makeSupabaseStorageProvider({ client: browserSupabase });
 
 // After (AWS)
-const dbFactory       = makeDrizzlePgFactory({ url: process.env.DATABASE_URL! });
-const authProvider    = makeCognitoAuthProvider({ region, userPoolId, clientId });
+const dbFactory = makeDrizzlePgFactory({ url: process.env.DATABASE_URL! });
+const authProvider = makeCognitoAuthProvider({ region, userPoolId, clientId });
 const storageProvider = makeS3StorageProvider({ region, accessKeyId, secretAccessKey });
 ```
 

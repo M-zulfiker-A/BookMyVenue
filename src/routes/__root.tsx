@@ -43,48 +43,74 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         <p className="mt-2 text-sm text-muted-foreground">{error.message}</p>
         <div className="mt-6 flex justify-center gap-2">
           <button
-            onClick={() => { router.invalidate(); reset(); }}
+            onClick={() => {
+              router.invalidate();
+              reset();
+            }}
             className="rounded-full bg-brand px-6 py-2 text-sm font-medium text-brand-foreground"
           >
             Try again
           </button>
-          <a href="/" className="rounded-full border border-input bg-background px-6 py-2 text-sm font-medium">Home</a>
+          <a
+            href="/"
+            className="rounded-full border border-input bg-background px-6 py-2 text-sm font-medium"
+          >
+            Home
+          </a>
         </div>
       </div>
     </div>
   );
 }
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
-  {
-    head: () => ({
-      meta: [
-        { charSet: "utf-8" },
-        { name: "viewport", content: "width=device-width, initial-scale=1" },
-        { title: "Book My Venue — Spaces for moments that matter" },
-        { name: "description", content: "Book extraordinary venues for weddings, conferences, parties, and celebrations." },
-        { property: "og:title", content: "Book My Venue — Spaces for moments that matter" },
-        { property: "og:description", content: "Book extraordinary venues for weddings, conferences, parties, and celebrations." },
-        { property: "og:type", content: "website" },
-        { name: "twitter:title", content: "Book My Venue — Spaces for moments that matter" },
-        { name: "twitter:description", content: "Book extraordinary venues for weddings, conferences, parties, and celebrations." },
-        { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/6ff07d70-9934-4bb6-8257-a8ca2a5dc7fe" },
-        { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/6ff07d70-9934-4bb6-8257-a8ca2a5dc7fe" },
-        { name: "twitter:card", content: "summary_large_image" },
-      ],
-      links: [
-        { rel: "stylesheet", href: appCss },
-        { rel: "preconnect", href: "https://fonts.googleapis.com" },
-        { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-        { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..600;1,400..600&family=Instrument+Serif:ital@0;1&display=swap" },
-      ],
-    }),
-    shellComponent: RootShell,
-    component: RootComponent,
-    notFoundComponent: NotFoundComponent,
-    errorComponent: ErrorComponent,
-  },
-);
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  head: () => ({
+    meta: [
+      { charSet: "utf-8" },
+      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { title: "Book My Venue — Spaces for moments that matter" },
+      {
+        name: "description",
+        content: "Book extraordinary venues for weddings, conferences, parties, and celebrations.",
+      },
+      { property: "og:title", content: "Book My Venue — Spaces for moments that matter" },
+      {
+        property: "og:description",
+        content: "Book extraordinary venues for weddings, conferences, parties, and celebrations.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:title", content: "Book My Venue — Spaces for moments that matter" },
+      {
+        name: "twitter:description",
+        content: "Book extraordinary venues for weddings, conferences, parties, and celebrations.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/6ff07d70-9934-4bb6-8257-a8ca2a5dc7fe",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/6ff07d70-9934-4bb6-8257-a8ca2a5dc7fe",
+      },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..600;1,400..600&family=Instrument+Serif:ital@0;1&display=swap",
+      },
+    ],
+  }),
+  shellComponent: RootShell,
+  component: RootComponent,
+  notFoundComponent: NotFoundComponent,
+  errorComponent: ErrorComponent,
+});
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (

@@ -33,7 +33,9 @@ function NewOfflineBookingPage() {
   const [guestPhone, setGuestPhone] = useState("");
   const [guestCount, setGuestCount] = useState<string>("");
   const [totalAmount, setTotalAmount] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<"cash" | "bank_transfer" | "card_offline" | "online" | "other">("cash");
+  const [paymentMethod, setPaymentMethod] = useState<
+    "cash" | "bank_transfer" | "card_offline" | "online" | "other"
+  >("cash");
   const [amountPaid, setAmountPaid] = useState("");
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
@@ -71,10 +73,15 @@ function NewOfflineBookingPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <Link to="/host/bookings" className="text-xs text-brand font-medium">← Back to bookings</Link>
+      <Link to="/host/bookings" className="text-xs text-brand font-medium">
+        ← Back to bookings
+      </Link>
       <h2 className="font-serif text-3xl mt-2 mb-6">New offline booking</h2>
 
-      <form onSubmit={handleSubmit} className="bg-white ring-1 ring-black/5 rounded-2xl p-6 space-y-5">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white ring-1 ring-black/5 rounded-2xl p-6 space-y-5"
+      >
         <div>
           <Label htmlFor="venue">Venue</Label>
           <select
@@ -86,7 +93,9 @@ function NewOfflineBookingPage() {
           >
             <option value="">Select a venue…</option>
             {venues.map((v) => (
-              <option key={v.id} value={v.id}>{v.name}</option>
+              <option key={v.id} value={v.id}>
+                {v.name}
+              </option>
             ))}
           </select>
         </div>
@@ -94,48 +103,99 @@ function NewOfflineBookingPage() {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label htmlFor="start">Start</Label>
-            <Input id="start" type="datetime-local" value={startTime} onChange={(e) => setStartTime(e.target.value)} required />
+            <Input
+              id="start"
+              type="datetime-local"
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+              required
+            />
           </div>
           <div>
             <Label htmlFor="end">End</Label>
-            <Input id="end" type="datetime-local" value={endTime} onChange={(e) => setEndTime(e.target.value)} required />
+            <Input
+              id="end"
+              type="datetime-local"
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+              required
+            />
           </div>
         </div>
 
         <div className="pt-2 border-t border-black/5">
-          <p className="text-[11px] uppercase tracking-widest text-lead/40 font-bold mb-3">Customer</p>
+          <p className="text-[11px] uppercase tracking-widest text-lead/40 font-bold mb-3">
+            Customer
+          </p>
           <div className="space-y-4">
             <div>
               <Label htmlFor="name">Name</Label>
-              <Input id="name" value={guestName} onChange={(e) => setGuestName(e.target.value)} required />
+              <Input
+                id="name"
+                value={guestName}
+                onChange={(e) => setGuestName(e.target.value)}
+                required
+              />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="email">Email (optional)</Label>
-                <Input id="email" type="email" value={guestEmail} onChange={(e) => setGuestEmail(e.target.value)} />
+                <Input
+                  id="email"
+                  type="email"
+                  value={guestEmail}
+                  onChange={(e) => setGuestEmail(e.target.value)}
+                />
               </div>
               <div>
                 <Label htmlFor="phone">Phone (optional)</Label>
-                <Input id="phone" value={guestPhone} onChange={(e) => setGuestPhone(e.target.value)} />
+                <Input
+                  id="phone"
+                  value={guestPhone}
+                  onChange={(e) => setGuestPhone(e.target.value)}
+                />
               </div>
             </div>
             <div>
               <Label htmlFor="count">Guests (optional)</Label>
-              <Input id="count" type="number" min="1" value={guestCount} onChange={(e) => setGuestCount(e.target.value)} />
+              <Input
+                id="count"
+                type="number"
+                min="1"
+                value={guestCount}
+                onChange={(e) => setGuestCount(e.target.value)}
+              />
             </div>
           </div>
         </div>
 
         <div className="pt-2 border-t border-black/5">
-          <p className="text-[11px] uppercase tracking-widest text-lead/40 font-bold mb-3">Payment</p>
+          <p className="text-[11px] uppercase tracking-widest text-lead/40 font-bold mb-3">
+            Payment
+          </p>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="total">Total amount</Label>
-              <Input id="total" type="number" step="0.01" min="0" value={totalAmount} onChange={(e) => setTotalAmount(e.target.value)} required />
+              <Input
+                id="total"
+                type="number"
+                step="0.01"
+                min="0"
+                value={totalAmount}
+                onChange={(e) => setTotalAmount(e.target.value)}
+                required
+              />
             </div>
             <div>
               <Label htmlFor="paid">Amount paid</Label>
-              <Input id="paid" type="number" step="0.01" min="0" value={amountPaid} onChange={(e) => setAmountPaid(e.target.value)} />
+              <Input
+                id="paid"
+                type="number"
+                step="0.01"
+                min="0"
+                value={amountPaid}
+                onChange={(e) => setAmountPaid(e.target.value)}
+              />
             </div>
           </div>
           <div className="mt-4">
@@ -159,7 +219,11 @@ function NewOfflineBookingPage() {
           <Textarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} />
         </div>
 
-        <Button type="submit" disabled={loading} className="w-full rounded-full bg-brand text-brand-foreground hover:bg-brand/90">
+        <Button
+          type="submit"
+          disabled={loading}
+          className="w-full rounded-full bg-brand text-brand-foreground hover:bg-brand/90"
+        >
           {loading ? "Saving…" : "Create booking"}
         </Button>
       </form>

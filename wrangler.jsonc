@@ -9,23 +9,23 @@
       "binding": "DB",
       "database_name": "book-my-venue-db",
       "database_id": "book-my-venue-db",
-      "migrations_dir": "drizzle/migrations"
-    }
+      "migrations_dir": "drizzle/migrations",
+    },
   ],
   "r2_buckets": [
     {
       "binding": "VENUE_IMAGES",
-      "bucket_name": "venue-images"
+      "bucket_name": "venue-images",
     },
     {
       "binding": "INVOICES",
-      "bucket_name": "invoices"
-    }
+      "bucket_name": "invoices",
+    },
   ],
   "kv_namespaces": [
     {
       "binding": "CACHE_KV",
-      "id": "book-my-venue-cache"
-    }
-  ]
+      "id": "book-my-venue-cache",
+    },
+  ],
 }

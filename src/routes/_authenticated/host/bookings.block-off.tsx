@@ -55,13 +55,19 @@ function BlockOffPage() {
 
   return (
     <div className="max-w-xl mx-auto">
-      <Link to="/host/bookings" className="text-xs text-brand font-medium">← Back to bookings</Link>
+      <Link to="/host/bookings" className="text-xs text-brand font-medium">
+        ← Back to bookings
+      </Link>
       <h2 className="font-serif text-3xl mt-2 mb-2">Block off time</h2>
       <p className="text-sm text-lead/60 mb-6">
-        Mark a slot as unavailable for maintenance, private use, or holidays. Customers won't be able to book this time.
+        Mark a slot as unavailable for maintenance, private use, or holidays. Customers won't be
+        able to book this time.
       </p>
 
-      <form onSubmit={handleSubmit} className="bg-white ring-1 ring-black/5 rounded-2xl p-6 space-y-5">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white ring-1 ring-black/5 rounded-2xl p-6 space-y-5"
+      >
         <div>
           <Label htmlFor="venue">Venue</Label>
           <select
@@ -73,7 +79,9 @@ function BlockOffPage() {
           >
             <option value="">Select a venue…</option>
             {venues.map((v) => (
-              <option key={v.id} value={v.id}>{v.name}</option>
+              <option key={v.id} value={v.id}>
+                {v.name}
+              </option>
             ))}
           </select>
         </div>
@@ -81,20 +89,42 @@ function BlockOffPage() {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label htmlFor="start">Start</Label>
-            <Input id="start" type="datetime-local" value={startTime} onChange={(e) => setStartTime(e.target.value)} required />
+            <Input
+              id="start"
+              type="datetime-local"
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+              required
+            />
           </div>
           <div>
             <Label htmlFor="end">End</Label>
-            <Input id="end" type="datetime-local" value={endTime} onChange={(e) => setEndTime(e.target.value)} required />
+            <Input
+              id="end"
+              type="datetime-local"
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+              required
+            />
           </div>
         </div>
 
         <div>
           <Label htmlFor="notes">Reason (optional)</Label>
-          <Textarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} placeholder="e.g. Maintenance, private event" />
+          <Textarea
+            id="notes"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            rows={3}
+            placeholder="e.g. Maintenance, private event"
+          />
         </div>
 
-        <Button type="submit" disabled={loading} className="w-full rounded-full bg-lead text-surface hover:bg-lead/90">
+        <Button
+          type="submit"
+          disabled={loading}
+          className="w-full rounded-full bg-lead text-surface hover:bg-lead/90"
+        >
           {loading ? "Blocking…" : "Block off slot"}
         </Button>
       </form>

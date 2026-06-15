@@ -51,10 +51,13 @@ export function makeCognitoAuthProvider(_cfg: CognitoAuthConfig): AuthProvider {
       // Redirect to: https://{hostedUiDomain}/oauth2/authorize?identity_provider=Google&...
       return { redirected: true };
     },
-    async resetPasswordForEmail() { throw new Error("Cognito: resetPasswordForEmail not implemented (sample)"); },
-    async updatePassword() { throw new Error("Cognito: updatePassword not implemented (sample)"); },
+    async resetPasswordForEmail() {
+      throw new Error("Cognito: resetPasswordForEmail not implemented (sample)");
+    },
+    async updatePassword() {
+      throw new Error("Cognito: updatePassword not implemented (sample)");
+    },
     async signOut() {
-
       listeners.forEach((cb) => cb(null));
     },
     async getSession() {

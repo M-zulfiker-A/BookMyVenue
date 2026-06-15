@@ -36,11 +36,7 @@ export function makePdfLibInvoiceRenderer(): InvoicePdfRenderer {
           y: yy,
           size: opts.size ?? 10,
           font: opts.bold ? bold : font,
-          color: rgb(
-            opts.color?.[0] ?? 0.1,
-            opts.color?.[1] ?? 0.1,
-            opts.color?.[2] ?? 0.12,
-          ),
+          color: rgb(opts.color?.[0] ?? 0.1, opts.color?.[1] ?? 0.1, opts.color?.[2] ?? 0.12),
         });
       };
 
@@ -157,12 +153,10 @@ export function makePdfLibInvoiceRenderer(): InvoicePdfRenderer {
       if (input.payment.method) draw(`Method: ${input.payment.method}`, margin + 12, y);
 
       // Footer
-      draw(
-        `Questions? Contact ${input.support_email}`,
-        margin,
-        margin,
-        { size: 8, color: [0.5, 0.5, 0.55] },
-      );
+      draw(`Questions? Contact ${input.support_email}`, margin, margin, {
+        size: 8,
+        color: [0.5, 0.5, 0.55],
+      });
 
       return doc.save();
     },

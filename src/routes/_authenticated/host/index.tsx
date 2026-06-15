@@ -13,8 +13,14 @@ function HostOverview() {
   const venuesFn = useServerFn(listHostVenues);
   const bookingsFn = useServerFn(listHostBookings);
 
-  const { data: venues = [] } = useQuery({ queryKey: ["host-venues"], queryFn: () => venuesFn({}) });
-  const { data: bookings = [] } = useQuery({ queryKey: ["host-bookings"], queryFn: () => bookingsFn({}) });
+  const { data: venues = [] } = useQuery({
+    queryKey: ["host-venues"],
+    queryFn: () => venuesFn({}),
+  });
+  const { data: bookings = [] } = useQuery({
+    queryKey: ["host-bookings"],
+    queryFn: () => bookingsFn({}),
+  });
 
   const confirmed = bookings.filter((b) => b.status === "confirmed");
   const pending = bookings.filter((b) => b.status === "pending");
@@ -33,7 +39,9 @@ function HostOverview() {
       <div className="grid md:grid-cols-4 gap-6 mb-10">
         {stats.map((s) => (
           <div key={s.label} className="bg-white p-6 rounded-2xl ring-1 ring-black/5">
-            <span className="block text-xs uppercase tracking-widest text-lead/40 font-semibold mb-2">{s.label}</span>
+            <span className="block text-xs uppercase tracking-widest text-lead/40 font-semibold mb-2">
+              {s.label}
+            </span>
             <span className="text-2xl font-serif">{s.value}</span>
           </div>
         ))}
@@ -42,8 +50,13 @@ function HostOverview() {
       {venues.length === 0 ? (
         <div className="bg-white ring-1 ring-black/5 rounded-2xl p-12 text-center">
           <h3 className="font-serif text-2xl mb-2">No venues yet</h3>
-          <p className="text-sm text-lead/60 mb-6">List your first space to start receiving bookings.</p>
-          <Link to="/host/venues/new" className="inline-flex rounded-full bg-brand text-brand-foreground px-6 py-2 text-sm font-medium">
+          <p className="text-sm text-lead/60 mb-6">
+            List your first space to start receiving bookings.
+          </p>
+          <Link
+            to="/host/venues/new"
+            className="inline-flex rounded-full bg-brand text-brand-foreground px-6 py-2 text-sm font-medium"
+          >
             List a venue
           </Link>
         </div>
@@ -51,7 +64,9 @@ function HostOverview() {
         <div className="bg-white rounded-2xl ring-1 ring-black/5 overflow-hidden">
           <div className="px-6 py-4 border-b border-black/5 flex items-center justify-between">
             <h2 className="font-medium">Recent bookings</h2>
-            <Link to="/host/bookings" className="text-xs text-brand font-medium">View all →</Link>
+            <Link to="/host/bookings" className="text-xs text-brand font-medium">
+              View all →
+            </Link>
           </div>
           {bookings.length === 0 ? (
             <p className="px-6 py-10 text-sm text-lead/50 text-center">No bookings yet.</p>

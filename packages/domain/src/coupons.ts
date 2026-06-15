@@ -28,11 +28,7 @@ export function computeDiscount(
 }
 
 /** Pure validity check: a coupon is redeemable now for the given venue. */
-export function isRedeemable(
-  c: Coupon,
-  forVenueId: string,
-  now: Date = new Date(),
-): boolean {
+export function isRedeemable(c: Coupon, forVenueId: string, now: Date = new Date()): boolean {
   if (!c.is_active) return false;
   if (c.venue_id && c.venue_id !== forVenueId) return false;
   if (c.valid_from && new Date(c.valid_from) > now) return false;

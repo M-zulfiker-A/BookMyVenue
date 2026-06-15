@@ -42,12 +42,7 @@ export function makeCouponsRepo(deps: { adminDb: any; userDb?: any }): CouponsRe
       const rows = await adminDb
         .select()
         .from(coupons)
-        .where(
-          and(
-            eq(sql`upper(${coupons.code})`, code.toUpperCase()),
-            eq(coupons.isActive, true)
-          )
-        )
+        .where(and(eq(sql`upper(${coupons.code})`, code.toUpperCase()), eq(coupons.isActive, true)))
         .limit(1);
       return rows[0] ? mapCoupon(rows[0]) : null;
     },

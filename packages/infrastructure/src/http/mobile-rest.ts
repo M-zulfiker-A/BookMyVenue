@@ -53,9 +53,7 @@ export function makeHttpAuthProvider(config: HttpAuthConfig): AuthProvider {
     return {
       accessToken: data.session.token ?? "",
       refreshToken: null,
-      expiresAt: data.session.expiresAt
-        ? new Date(data.session.expiresAt).getTime() / 1000
-        : null,
+      expiresAt: data.session.expiresAt ? new Date(data.session.expiresAt).getTime() / 1000 : null,
       user: {
         id: data.user.id,
         email: data.user.email ?? null,
@@ -114,7 +112,10 @@ export function makeHttpAuthProvider(config: HttpAuthConfig): AuthProvider {
       return { session };
     },
 
-    async signInWithOAuth(_provider: OAuthProviderId, _opts?: OAuthSignInOptions): Promise<OAuthSignInResult> {
+    async signInWithOAuth(
+      _provider: OAuthProviderId,
+      _opts?: OAuthSignInOptions,
+    ): Promise<OAuthSignInResult> {
       return {
         redirected: false,
         error: new Error("OAuth sign-in is not implemented on mobile HTTP client yet."),
@@ -128,7 +129,7 @@ export function makeHttpAuthProvider(config: HttpAuthConfig): AuthProvider {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         }).catch(() => {});
       }
@@ -143,7 +144,7 @@ export function makeHttpAuthProvider(config: HttpAuthConfig): AuthProvider {
         const res = await fetch(`${config.apiUrl}/api/auth/get-session`, {
           method: "GET",
           headers: {
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
         if (!res.ok) {
@@ -198,7 +199,7 @@ export function makeHttpAuthProvider(config: HttpAuthConfig): AuthProvider {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ newPassword }),
       });
@@ -245,7 +246,11 @@ export function makeHttpStorageProvider(config: HttpStorageConfig): StorageProvi
       };
     },
 
-    async upload(bucket: string, path: string, file: Blob | ArrayBuffer | Uint8Array): Promise<UploadResult> {
+    async upload(
+      bucket: string,
+      path: string,
+      file: Blob | ArrayBuffer | Uint8Array,
+    ): Promise<UploadResult> {
       const token = config.getToken ? await config.getToken() : null;
       const formData = new FormData();
       formData.append("bucket", bucket);
@@ -255,7 +260,7 @@ export function makeHttpStorageProvider(config: HttpStorageConfig): StorageProvi
       const res = await fetch(`${config.apiUrl}/api/storage/upload`, {
         method: "POST",
         headers: {
-          ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: formData,
       });
@@ -271,7 +276,7 @@ export function makeHttpStorageProvider(config: HttpStorageConfig): StorageProvi
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({ bucket, paths }),
       });
@@ -344,7 +349,7 @@ export function makeHttpBookingsRepo(config: {
       const res = await fetch(`${config.apiUrl}/api/bookings`, {
         method: "GET",
         headers: {
-          ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
       });
       if (!res.ok) {
@@ -353,11 +358,17 @@ export function makeHttpBookingsRepo(config: {
       return res.json();
     },
 
-    async findVenuePricing(_id: string): Promise<Pick<Venue, "id" | "base_price_cents" | "currency" | "pricing_mode"> | null> {
+    async findVenuePricing(
+      _id: string,
+    ): Promise<Pick<Venue, "id" | "base_price_cents" | "currency" | "pricing_mode"> | null> {
       throw new Error("Method not implemented on mobile HTTP client");
     },
 
-    async findConflicts(_args: { venue_id: string; start_time: string; end_time: string }): Promise<Array<Pick<Booking, "id" | "status" | "expires_at">>> {
+    async findConflicts(_args: {
+      venue_id: string;
+      start_time: string;
+      end_time: string;
+    }): Promise<Array<Pick<Booking, "id" | "status" | "expires_at">>> {
       throw new Error("Method not implemented on mobile HTTP client");
     },
 
@@ -369,7 +380,12 @@ export function makeHttpBookingsRepo(config: {
       throw new Error("Method not implemented on mobile HTTP client");
     },
 
-    async updateStatus(_args: { id: string; version: number; status: BookingStatus; expires_at: string | null }): Promise<Booking> {
+    async updateStatus(_args: {
+      id: string;
+      version: number;
+      status: BookingStatus;
+      expires_at: string | null;
+    }): Promise<Booking> {
       throw new Error("Method not implemented on mobile HTTP client");
     },
 

@@ -70,9 +70,7 @@ function toSession(data: any): AuthSession | null {
   return {
     accessToken: data.session.token ?? "",
     refreshToken: null,
-    expiresAt: data.session.expiresAt
-      ? new Date(data.session.expiresAt).getTime() / 1000
-      : null,
+    expiresAt: data.session.expiresAt ? new Date(data.session.expiresAt).getTime() / 1000 : null,
     user: {
       id: data.user.id,
       email: data.user.email ?? null,
@@ -133,7 +131,9 @@ export function makeBetterAuthProvider(client: BetterAuthClient): AuthProvider {
       try {
         const result = await client.signIn.social({
           provider,
-          callbackURL: opts?.redirectUri ?? (typeof window !== "undefined" ? window.location.origin : undefined),
+          callbackURL:
+            opts?.redirectUri ??
+            (typeof window !== "undefined" ? window.location.origin : undefined),
         });
         if (result.error) {
           return { redirected: false, error: new Error(result.error.message) };
@@ -193,7 +193,7 @@ export function makeBetterAuthProvider(client: BetterAuthClient): AuthProvider {
       // For standalone token verification, we'd need the server auth instance.
       throw new Error(
         "verifyAccessToken is not used with Better Auth. " +
-        "Use the auth middleware's getSession instead."
+          "Use the auth middleware's getSession instead.",
       );
     },
   };

@@ -3,8 +3,17 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, useMemo, useEffect } from "react";
 import { getVenue } from "@/server-adapters/venues.functions";
-import { quoteBooking, createBookingHold, confirmBooking } from "@/server-adapters/bookings.functions";
-import { listVenueReviews, canIReviewVenue, upsertMyReview, deleteMyReview } from "@/server-adapters/reviews.functions";
+import {
+  quoteBooking,
+  createBookingHold,
+  confirmBooking,
+} from "@/server-adapters/bookings.functions";
+import {
+  listVenueReviews,
+  canIReviewVenue,
+  upsertMyReview,
+  deleteMyReview,
+} from "@/server-adapters/reviews.functions";
 import { SiteNav, SiteFooter } from "@/components/site-nav";
 import { StarRating } from "@/components/star-rating";
 import { formatAddress, formatMoney } from "@/lib/format";
@@ -62,15 +71,16 @@ function VenueDetailPage() {
   const quoteFn = useServerFn(quoteBooking);
   const { data: quote } = useQuery({
     queryKey: ["quote", venueId, startIso, endIso, coupon],
-    queryFn: () => quoteFn({
-      data: {
-        venue_id: venueId,
-        start_time: startIso,
-        end_time: endIso,
-        guest_count: guests,
-        coupon_code: coupon || undefined,
-      },
-    }).catch(() => null),
+    queryFn: () =>
+      quoteFn({
+        data: {
+          venue_id: venueId,
+          start_time: startIso,
+          end_time: endIso,
+          guest_count: guests,
+          coupon_code: coupon || undefined,
+        },
+      }).catch(() => null),
     enabled: !!venue && new Date(end) > new Date(start),
   });
 
@@ -115,8 +125,12 @@ function VenueDetailPage() {
     );
   }
 
-  const gallery: string[] = Array.isArray(venue.gallery_urls) ? (venue.gallery_urls as unknown[]).filter((u): u is string => typeof u === "string") : [];
-  const amenities: string[] = Array.isArray(venue.amenities) ? (venue.amenities as unknown[]).filter((a): a is string => typeof a === "string") : [];
+  const gallery: string[] = Array.isArray(venue.gallery_urls)
+    ? (venue.gallery_urls as unknown[]).filter((u): u is string => typeof u === "string")
+    : [];
+  const amenities: string[] = Array.isArray(venue.amenities)
+    ? (venue.amenities as unknown[]).filter((a): a is string => typeof a === "string")
+    : [];
 
   return (
     <div className="min-h-screen bg-surface text-lead">
@@ -138,9 +152,15 @@ function VenueDetailPage() {
             <div className="grid grid-cols-4 gap-3 mb-12">
               <div className="col-span-4 aspect-[16/9] bg-stone-100 rounded-[12px] overflow-hidden ring-1 ring-black/5">
                 {(selectedImage ?? venue.cover_image_url) ? (
-                  <img src={selectedImage ?? venue.cover_image_url!} alt={venue.name} className="w-full h-full object-cover" />
+                  <img
+                    src={selectedImage ?? venue.cover_image_url!}
+                    alt={venue.name}
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
-                  <div className="w-full h-full grid place-items-center text-xs uppercase tracking-widest text-stone-400">No image</div>
+                  <div className="w-full h-full grid place-items-center text-xs uppercase tracking-widest text-stone-400">
+                    No image
+                  </div>
                 )}
               </div>
               {gallery.slice(0, 4).map((url, i) => (
@@ -161,10 +181,15 @@ function VenueDetailPage() {
               </p>
               {amenities.length > 0 && (
                 <>
-                  <h3 className="text-sm uppercase tracking-widest font-semibold text-lead/50 mb-3">Amenities</h3>
+                  <h3 className="text-sm uppercase tracking-widest font-semibold text-lead/50 mb-3">
+                    Amenities
+                  </h3>
                   <div className="flex flex-wrap gap-2">
                     {amenities.map((a) => (
-                      <span key={a} className="px-3 py-1 bg-stone-100 text-[12px] font-medium rounded-full ring-1 ring-black/5">
+                      <span
+                        key={a}
+                        className="px-3 py-1 bg-stone-100 text-[12px] font-medium rounded-full ring-1 ring-black/5"
+                      >
                         {a}
                       </span>
                     ))}
@@ -177,26 +202,72 @@ function VenueDetailPage() {
           <div className="lg:col-span-4">
             <div className="sticky top-24 bg-white ring-1 ring-black/10 rounded-[20px] p-6 shadow-xl shadow-zinc-950/5">
               <div className="flex justify-between items-baseline mb-6">
-                <span className="text-2xl font-serif text-brand">{formatMoney(venue.base_price_cents, venue.currency)}</span>
-                <span className="text-sm text-lead/50">{pricingUnitLabel((venue.pricing_mode ?? "per_hour") as PricingMode)}</span>
+                <span className="text-2xl font-serif text-brand">
+                  {formatMoney(venue.base_price_cents, venue.currency)}
+                </span>
+                <span className="text-sm text-lead/50">
+                  {pricingUnitLabel((venue.pricing_mode ?? "per_hour") as PricingMode)}
+                </span>
               </div>
 
               <div className="space-y-3 mb-4">
                 <div>
-                  <Label htmlFor="start" className="text-[9px] uppercase tracking-wider text-lead/50 font-bold">Start</Label>
-                  <Input id="start" type="datetime-local" value={start} onChange={(e) => setStart(e.target.value)} />
+                  <Label
+                    htmlFor="start"
+                    className="text-[9px] uppercase tracking-wider text-lead/50 font-bold"
+                  >
+                    Start
+                  </Label>
+                  <Input
+                    id="start"
+                    type="datetime-local"
+                    value={start}
+                    onChange={(e) => setStart(e.target.value)}
+                  />
                 </div>
                 <div>
-                  <Label htmlFor="end" className="text-[9px] uppercase tracking-wider text-lead/50 font-bold">End</Label>
-                  <Input id="end" type="datetime-local" value={end} onChange={(e) => setEnd(e.target.value)} />
+                  <Label
+                    htmlFor="end"
+                    className="text-[9px] uppercase tracking-wider text-lead/50 font-bold"
+                  >
+                    End
+                  </Label>
+                  <Input
+                    id="end"
+                    type="datetime-local"
+                    value={end}
+                    onChange={(e) => setEnd(e.target.value)}
+                  />
                 </div>
                 <div>
-                  <Label htmlFor="guests" className="text-[9px] uppercase tracking-wider text-lead/50 font-bold">Guests</Label>
-                  <Input id="guests" type="number" min={1} max={venue.capacity} value={guests} onChange={(e) => setGuests(Number(e.target.value))} />
+                  <Label
+                    htmlFor="guests"
+                    className="text-[9px] uppercase tracking-wider text-lead/50 font-bold"
+                  >
+                    Guests
+                  </Label>
+                  <Input
+                    id="guests"
+                    type="number"
+                    min={1}
+                    max={venue.capacity}
+                    value={guests}
+                    onChange={(e) => setGuests(Number(e.target.value))}
+                  />
                 </div>
                 <div>
-                  <Label htmlFor="coupon" className="text-[9px] uppercase tracking-wider text-lead/50 font-bold">Coupon code (optional)</Label>
-                  <Input id="coupon" value={coupon} onChange={(e) => setCoupon(e.target.value.toUpperCase())} placeholder="ATELIER10" />
+                  <Label
+                    htmlFor="coupon"
+                    className="text-[9px] uppercase tracking-wider text-lead/50 font-bold"
+                  >
+                    Coupon code (optional)
+                  </Label>
+                  <Input
+                    id="coupon"
+                    value={coupon}
+                    onChange={(e) => setCoupon(e.target.value.toUpperCase())}
+                    placeholder="ATELIER10"
+                  />
                 </div>
               </div>
 
@@ -234,7 +305,8 @@ function VenueDetailPage() {
                 Soft-locked for 15 min while you confirm your reservation.
               </p>
               <div className="mt-3 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-[11px] text-amber-800 text-center">
-                <span className="font-semibold">Disclaimer:</span> This is a mock project — no real payment is processed.
+                <span className="font-semibold">Disclaimer:</span> This is a mock project — no real
+                payment is processed.
               </div>
             </div>
           </div>
@@ -333,7 +405,9 @@ function ReviewsSection({ venueId }: { venueId: string }) {
             <div className="flex items-center gap-2 mb-8 text-sm text-lead/60">
               <StarRating value={reviewsData.average} readOnly size={16} />
               <span className="font-medium text-lead">{reviewsData.average.toFixed(1)}</span>
-              <span>· {reviewsData.count} review{reviewsData.count > 1 ? "s" : ""}</span>
+              <span>
+                · {reviewsData.count} review{reviewsData.count > 1 ? "s" : ""}
+              </span>
             </div>
           ) : (
             <p className="text-lead/50 text-sm mb-8">No reviews yet.</p>
@@ -381,10 +455,7 @@ function ReviewsSection({ venueId }: { venueId: string }) {
                 <p className="text-sm text-lead/60">
                   Only guests with a confirmed booking at this venue can leave a review.
                 </p>
-                <Link
-                  to="/account/bookings"
-                  className="text-sm text-brand hover:underline"
-                >
+                <Link to="/account/bookings" className="text-sm text-brand hover:underline">
                   View your bookings →
                 </Link>
               </div>
@@ -456,5 +527,3 @@ function ReviewsSection({ venueId }: { venueId: string }) {
     </section>
   );
 }
-
-

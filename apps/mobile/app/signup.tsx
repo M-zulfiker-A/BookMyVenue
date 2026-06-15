@@ -50,22 +50,39 @@ export default function SignupScreen() {
           <View className="flex-row gap-3">
             <View className="flex-1">
               <Label>First name</Label>
-              <Input value={form.first_name} onChangeText={(v) => setForm({ ...form, first_name: v })} />
+              <Input
+                value={form.first_name}
+                onChangeText={(v) => setForm({ ...form, first_name: v })}
+              />
             </View>
             <View className="flex-1">
               <Label>Last name</Label>
-              <Input value={form.last_name} onChangeText={(v) => setForm({ ...form, last_name: v })} />
+              <Input
+                value={form.last_name}
+                onChangeText={(v) => setForm({ ...form, last_name: v })}
+              />
             </View>
           </View>
           <View>
             <Label>Email</Label>
-            <Input value={form.email} onChangeText={(v) => setForm({ ...form, email: v })} autoCapitalize="none" keyboardType="email-address" />
+            <Input
+              value={form.email}
+              onChangeText={(v) => setForm({ ...form, email: v })}
+              autoCapitalize="none"
+              keyboardType="email-address"
+            />
           </View>
           <View>
             <Label>Password</Label>
-            <Input value={form.password} onChangeText={(v) => setForm({ ...form, password: v })} secureTextEntry />
+            <Input
+              value={form.password}
+              onChangeText={(v) => setForm({ ...form, password: v })}
+              secureTextEntry
+            />
           </View>
-          <Button onPress={submit} disabled={loading}>{loading ? "Creating…" : "Create account"}</Button>
+          <Button onPress={submit} disabled={loading}>
+            {loading ? "Creating…" : "Create account"}
+          </Button>
         </View>
       </View>
     </SafeAreaView>

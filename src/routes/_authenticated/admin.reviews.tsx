@@ -34,21 +34,36 @@ function AdminReviews() {
           </tr>
         </thead>
         <tbody className="divide-y divide-zinc-950/5">
-          {isLoading && <tr><td colSpan={6} className="px-4 py-6 text-center text-lead/50">Loading…</td></tr>}
+          {isLoading && (
+            <tr>
+              <td colSpan={6} className="px-4 py-6 text-center text-lead/50">
+                Loading…
+              </td>
+            </tr>
+          )}
           {data.map((r) => (
             <tr key={r.id}>
               <td className="px-4 py-3 text-xs">{new Date(r.created_at).toLocaleDateString()}</td>
               <td className="px-4 py-3">{r.venues?.name ?? "—"}</td>
               <td className="px-4 py-3 text-xs">{r.user?.email ?? "—"}</td>
-              <td className="px-4 py-3">{"★".repeat(r.rating)}<span className="text-lead/20">{"★".repeat(5 - r.rating)}</span></td>
+              <td className="px-4 py-3">
+                {"★".repeat(r.rating)}
+                <span className="text-lead/20">{"★".repeat(5 - r.rating)}</span>
+              </td>
               <td className="px-4 py-3 text-xs max-w-md truncate">{r.feedback ?? ""}</td>
               <td className="px-4 py-3 text-right">
-                <Button size="sm" variant="destructive" onClick={() => remove(r.id)}>Delete</Button>
+                <Button size="sm" variant="destructive" onClick={() => remove(r.id)}>
+                  Delete
+                </Button>
               </td>
             </tr>
           ))}
           {!isLoading && data.length === 0 && (
-            <tr><td colSpan={6} className="px-4 py-8 text-center text-lead/50">No reviews.</td></tr>
+            <tr>
+              <td colSpan={6} className="px-4 py-8 text-center text-lead/50">
+                No reviews.
+              </td>
+            </tr>
           )}
         </tbody>
       </table>

@@ -3,7 +3,13 @@
 
 import type { PricingMode } from "./venues";
 
-export type BookingStatus = "pending" | "confirmed" | "cancelled" | "completed" | "refunded" | "expired";
+export type BookingStatus =
+  | "pending"
+  | "confirmed"
+  | "cancelled"
+  | "completed"
+  | "refunded"
+  | "expired";
 export type BookingSource = "online" | "offline" | "block_off";
 export type BookingPaymentMethod = "cash" | "bank_transfer" | "card_offline" | "online" | "other";
 
@@ -112,7 +118,10 @@ export function calculateSubtotal(basePriceCents: number, hours: number): number
 }
 
 /** A pending booking only blocks new bookings until expires_at passes. */
-export function isBlocking(b: Pick<Booking, "status" | "expires_at">, now: number = Date.now()): boolean {
+export function isBlocking(
+  b: Pick<Booking, "status" | "expires_at">,
+  now: number = Date.now(),
+): boolean {
   if (b.status === "confirmed") return true;
   if (b.status === "pending" && b.expires_at && new Date(b.expires_at).getTime() > now) return true;
   return false;

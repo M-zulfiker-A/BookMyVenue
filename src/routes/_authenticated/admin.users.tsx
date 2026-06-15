@@ -35,8 +35,17 @@ function AdminUsers() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-3">
-        <Input placeholder="Search name or email…" value={search} onChange={(e) => setSearch(e.target.value)} className="max-w-xs" />
-        <select className="border rounded-md px-3 text-sm bg-white" value={role} onChange={(e) => setRole(e.target.value as "" | "customer" | "host" | "admin")}>
+        <Input
+          placeholder="Search name or email…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="max-w-xs"
+        />
+        <select
+          className="border rounded-md px-3 text-sm bg-white"
+          value={role}
+          onChange={(e) => setRole(e.target.value as "" | "customer" | "host" | "admin")}
+        >
           <option value="">All roles</option>
           <option value="customer">Customer</option>
           <option value="host">Host</option>
@@ -57,40 +66,73 @@ function AdminUsers() {
           </thead>
           <tbody className="divide-y divide-zinc-950/5">
             {isLoading && (
-              <tr><td colSpan={5} className="px-4 py-6 text-center text-lead/50">Loading…</td></tr>
+              <tr>
+                <td colSpan={5} className="px-4 py-6 text-center text-lead/50">
+                  Loading…
+                </td>
+              </tr>
             )}
             {data.map((u) => (
               <tr key={u.id} className={u.is_suspended ? "bg-amber-50/40" : ""}>
                 <td className="px-4 py-3">
-                  <div className="font-medium">{[u.first_name, u.last_name].filter(Boolean).join(" ") || "—"}</div>
+                  <div className="font-medium">
+                    {[u.first_name, u.last_name].filter(Boolean).join(" ") || "—"}
+                  </div>
                   <div className="text-xs text-lead/50">{u.email}</div>
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex gap-1 flex-wrap">
                     {u.roles.map((r) => (
-                      <span key={r} className="px-2 py-0.5 text-[10px] uppercase tracking-wider rounded-full bg-stone-100">{r}</span>
+                      <span
+                        key={r}
+                        className="px-2 py-0.5 text-[10px] uppercase tracking-wider rounded-full bg-stone-100"
+                      >
+                        {r}
+                      </span>
                     ))}
                   </div>
                 </td>
-                <td className="px-4 py-3 text-xs text-lead/60">{new Date(u.created_at).toLocaleDateString()}</td>
+                <td className="px-4 py-3 text-xs text-lead/60">
+                  {new Date(u.created_at).toLocaleDateString()}
+                </td>
                 <td className="px-4 py-3">
-                  {u.is_suspended ? <span className="text-amber-700 text-xs">Suspended</span> : <span className="text-emerald-700 text-xs">Active</span>}
+                  {u.is_suspended ? (
+                    <span className="text-amber-700 text-xs">Suspended</span>
+                  ) : (
+                    <span className="text-emerald-700 text-xs">Active</span>
+                  )}
                 </td>
                 <td className="px-4 py-3 text-right space-x-2 whitespace-nowrap">
-                  <Button size="sm" variant="outline" onClick={() => toggleRole(u.id, "host", u.roles.includes("host"))}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => toggleRole(u.id, "host", u.roles.includes("host"))}
+                  >
                     {u.roles.includes("host") ? "Demote host" : "Make host"}
                   </Button>
-                  <Button size="sm" variant="outline" onClick={() => toggleRole(u.id, "admin", u.roles.includes("admin"))}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => toggleRole(u.id, "admin", u.roles.includes("admin"))}
+                  >
                     {u.roles.includes("admin") ? "Demote admin" : "Make admin"}
                   </Button>
-                  <Button size="sm" variant={u.is_suspended ? "default" : "destructive"} onClick={() => toggleSuspend(u.id, u.is_suspended)}>
+                  <Button
+                    size="sm"
+                    variant={u.is_suspended ? "default" : "destructive"}
+                    onClick={() => toggleSuspend(u.id, u.is_suspended)}
+                  >
                     {u.is_suspended ? "Unsuspend" : "Suspend"}
                   </Button>
                 </td>
               </tr>
             ))}
             {!isLoading && data.length === 0 && (
-              <tr><td colSpan={5} className="px-4 py-8 text-center text-lead/50">No users.</td></tr>
+              <tr>
+                <td colSpan={5} className="px-4 py-8 text-center text-lead/50">
+                  No users.
+                </td>
+              </tr>
             )}
           </tbody>
         </table>

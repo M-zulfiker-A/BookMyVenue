@@ -4,32 +4,29 @@ import { getRequest } from "@tanstack/react-start/server";
 import { createAuth } from "@/lib/auth";
 import { getCloudflareEnv } from "@/lib/cloudflare-env";
 
-export const requireAuth = createMiddleware({ type: "function" }).server(
-  async ({ next }) => {
-    const auth = createAuth();
-    const request = getRequest();
+export const requireAuth = createMiddleware({ type: "function" }).server(async ({ next }) => {
+  const auth = createAuth();
+  const request = getRequest();
 
-    if (!request?.headers) {
-      throw new Error("Unauthorized: No request headers available");
-    }
+  if (!request?.headers) {
+    throw new Error("Unauthorized: No request headers available");
+  }
 
-    // Better Auth resolves session from cookies automatically
-    const session = await auth.api.getSession({
-      headers: request.headers,
-    });
+  // Better Auth resolves session from cookies automatically
+  const session = await auth.api.getSession({
+    headers: request.headers,
+  });
 
-    if (!session?.user) {
-      throw new Error("Unauthorized: No valid session");
-    }
+  if (!session?.user) {
+    throw new Error("Unauthorized: No valid session");
+  }
 
-    return next({
-      context: {
-        userId: session.user.id,
-        session,
-        // Provide a DB handle for use in the DI container
-        db: getCloudflareEnv().DB,
-      },
-    });
-  },
-);
-
+  return next({
+    context: {
+      userId: session.user.id,
+      session,
+      // Provide a DB handle for use in the DI container
+      db: getCloudflareEnv().DB,
+    },
+  });
+});

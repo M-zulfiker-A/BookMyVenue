@@ -4,7 +4,7 @@ import { renderErrorPage } from "./lib/error-page";
 import { attachAuth } from "@/lib/auth-attacher";
 
 const csrfMiddleware = createCsrfMiddleware({
-  filter: (ctx) => ctx.handlerType === 'serverFn',
+  filter: (ctx) => ctx.handlerType === "serverFn",
 });
 
 const errorMiddleware = createMiddleware().server(async ({ next }) => {
@@ -26,4 +26,3 @@ export const startInstance = createStart(() => ({
   requestMiddleware: [csrfMiddleware, errorMiddleware],
   functionMiddleware: [attachAuth],
 }));
-

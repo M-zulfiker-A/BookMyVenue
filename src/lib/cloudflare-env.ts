@@ -9,10 +9,10 @@ import { env as cfEnv } from "cloudflare:workers";
  * Typed interface for all Cloudflare bindings declared in wrangler.jsonc.
  */
 export interface CloudflareBindings {
-  DB: any;            // D1Database
-  VENUE_IMAGES: any;  // R2Bucket
-  INVOICES: any;      // R2Bucket
-  CACHE_KV: any;      // KVNamespace
+  DB: any; // D1Database
+  VENUE_IMAGES: any; // R2Bucket
+  INVOICES: any; // R2Bucket
+  CACHE_KV: any; // KVNamespace
   BETTER_AUTH_SECRET: string;
   BETTER_AUTH_URL: string;
   GOOGLE_CLIENT_ID?: string;

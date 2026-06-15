@@ -111,7 +111,5 @@ export const deleteVenueUseCase =
     await invalidateVenuesCache(cache);
   };
 
-export const becomeHostUseCase =
-  (roles: UserRolesRepo) =>
-  (): Promise<void> =>
-    roles.promoteSelfToHost();
+export const becomeHostUseCase = (roles: UserRolesRepo) => (): Promise<void> =>
+  roles.promoteSelfToHost();

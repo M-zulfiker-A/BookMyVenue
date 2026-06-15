@@ -43,10 +43,7 @@ export type Unsubscribe = () => void;
  */
 export interface AuthProvider {
   // ----- Client-side -----
-  signInWithPassword(input: {
-    email: string;
-    password: string;
-  }): Promise<AuthSession>;
+  signInWithPassword(input: { email: string; password: string }): Promise<AuthSession>;
 
   signUp(input: {
     email: string;
@@ -55,24 +52,17 @@ export interface AuthProvider {
     emailRedirectTo?: string;
   }): Promise<{ session: AuthSession | null }>;
 
-  signInWithOAuth(
-    provider: OAuthProviderId,
-    opts?: OAuthSignInOptions,
-  ): Promise<OAuthSignInResult>;
+  signInWithOAuth(provider: OAuthProviderId, opts?: OAuthSignInOptions): Promise<OAuthSignInResult>;
 
   signOut(): Promise<void>;
   getSession(): Promise<AuthSession | null>;
   onAuthStateChange(cb: (session: AuthSession | null) => void): Unsubscribe;
 
   /** Send a password-reset email. */
-  resetPasswordForEmail(
-    email: string,
-    opts?: { redirectUri?: string },
-  ): Promise<void>;
+  resetPasswordForEmail(email: string, opts?: { redirectUri?: string }): Promise<void>;
 
   /** Update the current user's password (requires an active session). */
   updatePassword(newPassword: string): Promise<void>;
-
 
   // ----- Server-side -----
   /** Verify an access token and return its claims. Throws on invalid. */

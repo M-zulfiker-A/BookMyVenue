@@ -52,11 +52,11 @@
   --radius: 0.75rem;
 
   /* Boutique archival palette */
-  --surface: oklch(0.985 0.003 60);          /* #fafaf9 stone-50 */
+  --surface: oklch(0.985 0.003 60); /* #fafaf9 stone-50 */
   --background: oklch(0.985 0.003 60);
-  --lead: oklch(0.184 0.008 60);             /* #1c1917 stone-900 */
+  --lead: oklch(0.184 0.008 60); /* #1c1917 stone-900 */
   --foreground: oklch(0.184 0.008 60);
-  --brand: oklch(0.51 0.142 41);             /* #9a3412 terracotta */
+  --brand: oklch(0.51 0.142 41); /* #9a3412 terracotta */
   --brand-foreground: oklch(0.985 0.003 60);
 
   --card: oklch(1 0 0);
@@ -64,10 +64,10 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.184 0.008 60);
 
-  --primary: oklch(0.51 0.142 41);           /* brand terracotta */
+  --primary: oklch(0.51 0.142 41); /* brand terracotta */
   --primary-foreground: oklch(0.985 0.003 60);
 
-  --secondary: oklch(0.955 0.005 60);        /* stone-100 */
+  --secondary: oklch(0.955 0.005 60); /* stone-100 */
   --secondary-foreground: oklch(0.184 0.008 60);
 
   --muted: oklch(0.955 0.005 60);
@@ -134,11 +134,15 @@
 }
 
 @layer base {
-  * { border-color: var(--color-border); }
+  * {
+    border-color: var(--color-border);
+  }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
   }
-  .font-serif { font-family: var(--font-serif); }
+  .font-serif {
+    font-family: var(--font-serif);
+  }
 }

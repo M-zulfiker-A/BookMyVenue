@@ -149,8 +149,18 @@ export const OfflineBookingSchema = z.object({
   start_time: z.string().datetime(),
   end_time: z.string().datetime(),
   guest_name: z.string().min(1).max(120),
-  guest_email: z.string().email().optional().or(z.literal("")).transform((v) => (v ? v : undefined)),
-  guest_phone: z.string().max(40).optional().or(z.literal("")).transform((v) => (v ? v : undefined)),
+  guest_email: z
+    .string()
+    .email()
+    .optional()
+    .or(z.literal(""))
+    .transform((v) => (v ? v : undefined)),
+  guest_phone: z
+    .string()
+    .max(40)
+    .optional()
+    .or(z.literal(""))
+    .transform((v) => (v ? v : undefined)),
   guest_count: z.number().int().min(1).max(100000).optional(),
   total_cents: z.number().int().min(0),
   payment_method: z.enum(["cash", "bank_transfer", "card_offline", "online", "other"]),
@@ -339,20 +349,14 @@ export const cancelBookingUseCase =
     return { ok: true };
   };
 
-export const listMyBookingsUseCase =
-  (repo: BookingsRepo) =>
-  (userId: string) =>
-    repo.listForCustomer(userId);
+export const listMyBookingsUseCase = (repo: BookingsRepo) => (userId: string) =>
+  repo.listForCustomer(userId);
 
-export const listHostBookingsUseCase =
-  (repo: BookingsRepo) =>
-  (hostId: string) =>
-    repo.listForHost(hostId);
+export const listHostBookingsUseCase = (repo: BookingsRepo) => (hostId: string) =>
+  repo.listForHost(hostId);
 
-export const getBookingUseCase =
-  (repo: BookingsRepo) =>
-  async (id: string) => {
-    const b = await repo.findWithVenue(id);
-    if (!b) throw new Error("Booking not found");
-    return b;
-  };
+export const getBookingUseCase = (repo: BookingsRepo) => async (id: string) => {
+  const b = await repo.findWithVenue(id);
+  if (!b) throw new Error("Booking not found");
+  return b;
+};

@@ -6,15 +6,15 @@
 // Mobile side: `apps/mobile/tailwind.config.js` maps these into NativeWind.
 
 export const palette = {
-  surface: "#fafaf9",          // stone-50
+  surface: "#fafaf9", // stone-50
   background: "#fafaf9",
-  lead: "#1c1917",             // stone-900
+  lead: "#1c1917", // stone-900
   foreground: "#1c1917",
-  brand: "#9a3412",            // terracotta-800
+  brand: "#9a3412", // terracotta-800
   brandForeground: "#fafaf9",
   card: "#ffffff",
-  muted: "#f5f5f4",            // stone-100
-  mutedForeground: "#78716c",  // stone-500
+  muted: "#f5f5f4", // stone-100
+  mutedForeground: "#78716c", // stone-500
   border: "rgba(28,25,23,0.08)",
   destructive: "#dc2626",
 } as const;

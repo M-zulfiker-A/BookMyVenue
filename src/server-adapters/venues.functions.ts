@@ -30,7 +30,10 @@ export const createVenue = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .inputValidator((input: unknown) => VenueInputSchema.parse(input))
   .handler(({ data, context }) =>
-    buildContainer({ db: context.db, userId: context.userId }).resolve(T.CreateVenue)(data, context.userId),
+    buildContainer({ db: context.db, userId: context.userId }).resolve(T.CreateVenue)(
+      data,
+      context.userId,
+    ),
   );
 
 export const updateVenue = createServerFn({ method: "POST" })
@@ -40,19 +43,26 @@ export const updateVenue = createServerFn({ method: "POST" })
   )
   .handler(({ data, context }) => {
     const { id, ...patch } = data;
-    return buildContainer({ db: context.db, userId: context.userId }).resolve(T.UpdateVenue)(id, patch);
+    return buildContainer({ db: context.db, userId: context.userId }).resolve(T.UpdateVenue)(
+      id,
+      patch,
+    );
   });
 
 export const listHostVenues = createServerFn({ method: "GET" })
   .middleware([requireAuth])
   .handler(({ context }) =>
-    buildContainer({ db: context.db, userId: context.userId }).resolve(T.ListHostVenues)(context.userId),
+    buildContainer({ db: context.db, userId: context.userId }).resolve(T.ListHostVenues)(
+      context.userId,
+    ),
   );
 
 export const deleteVenue = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
-    await buildContainer({ db: context.db, userId: context.userId }).resolve(T.DeleteVenue)(data.id);
+    await buildContainer({ db: context.db, userId: context.userId }).resolve(T.DeleteVenue)(
+      data.id,
+    );
     return { ok: true as const };
   });

@@ -113,16 +113,14 @@ export const CreateOfflineBooking =
 export const CreateBlockOff = token<ReturnType<typeof createBlockOffUseCase>>("CreateBlockOff");
 
 // Coupons
-export const ListHostCoupons =
-  token<ReturnType<typeof listHostCouponsUseCase>>("ListHostCoupons");
+export const ListHostCoupons = token<ReturnType<typeof listHostCouponsUseCase>>("ListHostCoupons");
 export const CreateCoupon = token<ReturnType<typeof createCouponUseCase>>("CreateCoupon");
 export const DeleteCoupon = token<ReturnType<typeof deleteCouponUseCase>>("DeleteCoupon");
 
 // Reviews
 export const ListVenueReviews =
   token<ReturnType<typeof listVenueReviewsUseCase>>("ListVenueReviews");
-export const CanIReviewVenue =
-  token<ReturnType<typeof canIReviewVenueUseCase>>("CanIReviewVenue");
+export const CanIReviewVenue = token<ReturnType<typeof canIReviewVenueUseCase>>("CanIReviewVenue");
 export const UpsertMyReview = token<ReturnType<typeof upsertMyReviewUseCase>>("UpsertMyReview");
 export const DeleteMyReview = token<ReturnType<typeof deleteMyReviewUseCase>>("DeleteMyReview");
 
@@ -136,15 +134,13 @@ export const SetUserSuspended =
 export const ListAllVenues = token<ReturnType<typeof listAllVenuesUseCase>>("ListAllVenues");
 export const SetVenueSuspended =
   token<ReturnType<typeof setVenueSuspendedAsAdminUseCase>>("SetVenueSuspended");
-export const ListAllBookings =
-  token<ReturnType<typeof listAllBookingsUseCase>>("ListAllBookings");
+export const ListAllBookings = token<ReturnType<typeof listAllBookingsUseCase>>("ListAllBookings");
 export const UpdateBookingStatus =
   token<ReturnType<typeof updateBookingStatusUseCase>>("UpdateBookingStatus");
 export const ExpireStuckBookings =
   token<ReturnType<typeof expireStuckBookingsUseCase>>("ExpireStuckBookings");
 export const ListAllCoupons = token<ReturnType<typeof listAllCouponsUseCase>>("ListAllCoupons");
-export const SetCouponActive =
-  token<ReturnType<typeof setCouponActiveUseCase>>("SetCouponActive");
+export const SetCouponActive = token<ReturnType<typeof setCouponActiveUseCase>>("SetCouponActive");
 export const ListAllReviews = token<ReturnType<typeof listAllReviewsUseCase>>("ListAllReviews");
 export const DeleteReviewAsAdmin =
   token<ReturnType<typeof deleteReviewAsAdminUseCase>>("DeleteReviewAsAdmin");

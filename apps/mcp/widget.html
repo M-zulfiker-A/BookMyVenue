@@ -29,7 +29,9 @@
     background: #f3f4f6;
     display: block;
   }
-  .venue-card .body { padding: 10px 12px 12px; }
+  .venue-card .body {
+    padding: 10px 12px 12px;
+  }
   .venue-card h3 {
     margin: 0 0 4px;
     font-size: 15px;
@@ -51,7 +53,11 @@
     color: #4f46e5;
     margin-bottom: 4px;
   }
-  .empty { padding: 24px; color: #6b7280; text-align: center; }
+  .empty {
+    padding: 24px;
+    color: #6b7280;
+    text-align: center;
+  }
 </style>
 <script>
   (function () {
@@ -71,8 +77,9 @@
       }
     };
     const esc = (s) =>
-      String(s == null ? "" : s).replace(/[&<>"']/g, (c) =>
-        ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]),
+      String(s == null ? "" : s).replace(
+        /[&<>"']/g,
+        (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c],
       );
 
     if (!venues.length) {

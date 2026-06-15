@@ -16,11 +16,6 @@ export default defineConfig({
     tsconfigPaths(),
   ],
   resolve: {
-    dedupe: [
-      "react",
-      "react-dom",
-      "@tanstack/react-router",
-      "@tanstack/react-query",
-    ],
+    dedupe: ["react", "react-dom", "@tanstack/react-router", "@tanstack/react-query"],
   },
 });

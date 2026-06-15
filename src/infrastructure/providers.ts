@@ -46,7 +46,7 @@ export const storageProvider: StorageProvider = {
       throw new Error(`Upload failed: ${await res.text()}`);
     }
 
-    const data = await res.json() as { path: string };
+    const data = (await res.json()) as { path: string };
     return data;
   },
 
