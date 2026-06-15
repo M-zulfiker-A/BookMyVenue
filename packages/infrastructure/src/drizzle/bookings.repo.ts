@@ -1,10 +1,18 @@
 // Drizzle implementation of BookingsRepo & PaymentsRepo
 
-import { eq, and, inArray, lt, gt, desc } from "drizzle-orm";
+import { eq, and, inArray, lt, gt, desc, sql } from "drizzle-orm";
 import type { Booking, BookingStatus } from "@repo/domain/bookings";
 import type { Venue } from "@repo/domain/venues";
 import type { BookingWithVenue, BookingsRepo, PaymentsRepo } from "@repo/contracts";
 import { bookings, venues, payments } from "./schema";
+
+/** Thrown when an atomic conditional INSERT detects an overlapping active booking. */
+export class BookingOverlapError extends Error {
+  constructor() {
+    super("Booking overlaps with an existing active booking");
+    this.name = "BookingOverlapError";
+  }
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapBooking(b: any): Booking {
@@ -105,32 +113,46 @@ export function makeBookingsRepo(deps: { adminDb: any; userDb?: any }): Bookings
 
     async create(input) {
       const id = crypto.randomUUID();
-      const insertData = {
-        id,
-        venueId: input.venue_id,
-        customerId: input.customer_id,
-        couponId: input.coupon_id,
-        startTime: input.start_time,
-        endTime: input.end_time,
-        guestCount: input.guest_count,
-        subtotalCents: input.subtotal_cents,
-        discountAmountCents: input.discount_amount_cents,
-        totalCents: input.total_cents,
-        currency: input.currency,
-        status: input.status,
-        expiresAt: input.expires_at,
-        notes: input.notes,
-        stripeSessionId: (input as any).stripe_session_id,
-        source: input.source,
-        guestName: input.guest_name,
-        guestEmail: input.guest_email,
-        guestPhone: input.guest_phone,
-        paymentMethod: input.payment_method,
-        amountPaidCents: input.amount_paid_cents,
-      };
+      const now = new Date().toISOString();
 
-      await db.insert(bookings).values(insertData);
-      
+      // Atomic conditional INSERT: the conflict check and insert happen in
+      // one SQL statement, so SQLite's write lock prevents concurrent races.
+      const result = await db.run(sql`
+        INSERT INTO bookings (
+          id, venue_id, customer_id, coupon_id,
+          start_time, end_time, guest_count,
+          subtotal_cents, discount_amount_cents, total_cents,
+          currency, status, expires_at, version,
+          notes, stripe_session_id, source,
+          guest_name, guest_email, guest_phone,
+          payment_method, amount_paid_cents,
+          created_at, updated_at
+        )
+        SELECT
+          ${id}, ${input.venue_id}, ${input.customer_id ?? null}, ${input.coupon_id ?? null},
+          ${input.start_time}, ${input.end_time}, ${input.guest_count ?? null},
+          ${input.subtotal_cents}, ${input.discount_amount_cents}, ${input.total_cents},
+          ${input.currency}, ${input.status}, ${input.expires_at ?? null}, 1,
+          ${input.notes ?? null}, ${(input as any).stripe_session_id ?? null}, ${input.source},
+          ${input.guest_name ?? null}, ${input.guest_email ?? null}, ${input.guest_phone ?? null},
+          ${input.payment_method ?? null}, ${input.amount_paid_cents},
+          ${now}, ${now}
+        WHERE NOT EXISTS (
+          SELECT 1 FROM bookings
+          WHERE venue_id = ${input.venue_id}
+            AND start_time < ${input.end_time}
+            AND end_time   > ${input.start_time}
+            AND (
+                  status = 'confirmed'
+               OR (status = 'pending' AND expires_at > ${now})
+            )
+        )
+      `);
+
+      if (!result.meta.changes) {
+        throw new BookingOverlapError();
+      }
+
       const rows = await db.select().from(bookings).where(eq(bookings.id, id)).limit(1);
       return mapBooking(rows[0]);
     },

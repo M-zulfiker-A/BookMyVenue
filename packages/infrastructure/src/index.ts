@@ -15,8 +15,8 @@ export { makeR2StorageProvider } from "./storage/r2.storage";
 export type { R2StorageConfig } from "./storage/r2.storage";
 
 // DB factories
-export { makeDrizzleD1Factory } from "./db/drizzle-d1.db";
-export type { DrizzleD1Deps } from "./db/drizzle-d1.db";
+export { makeDrizzleD1Factory } from "./db/drizzle-d1-db";
+export type { DrizzleD1Deps } from "./db/drizzle-d1-db";
 export * from "./drizzle";
 
 // Cache adapters

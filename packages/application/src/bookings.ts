@@ -13,6 +13,12 @@ import { pricingUnitLabel } from "@repo/domain/venues";
 import { computeDiscount, isRedeemable, type Coupon } from "@repo/domain/coupons";
 import type { BookingsRepo, CacheStore, CouponsRepo, PaymentsRepo } from "@repo/contracts";
 
+/** Check if an error is a BookingOverlapError from the infrastructure layer.
+ *  Matched by name to avoid coupling the application layer to infrastructure. */
+function isBookingOverlapError(err: unknown): boolean {
+  return err instanceof Error && err.name === "BookingOverlapError";
+}
+
 async function invalidateVenuesCache(cache: CacheStore) {
   try {
     await cache.invalidateNamespace("venues");
@@ -103,27 +109,35 @@ export const createBookingHoldUseCase =
     const discount = coupon ? computeDiscount(subtotal, coupon) : 0;
     const total = subtotal - discount;
 
-    const created = await bookings.create({
-      venue_id: input.venue_id,
-      customer_id: userId,
-      coupon_id: coupon?.id ?? null,
-      start_time: input.start_time,
-      end_time: input.end_time,
-      guest_count: input.guest_count ?? null,
-      subtotal_cents: subtotal,
-      discount_amount_cents: discount,
-      total_cents: total,
-      currency: venue.currency,
-      status: "pending",
-      expires_at: newHoldExpiry(),
-      source: "online",
-      guest_name: null,
-      guest_email: null,
-      guest_phone: null,
-      payment_method: null,
-      amount_paid_cents: 0,
-      notes: null,
-    });
+    let created: Booking;
+    try {
+      created = await bookings.create({
+        venue_id: input.venue_id,
+        customer_id: userId,
+        coupon_id: coupon?.id ?? null,
+        start_time: input.start_time,
+        end_time: input.end_time,
+        guest_count: input.guest_count ?? null,
+        subtotal_cents: subtotal,
+        discount_amount_cents: discount,
+        total_cents: total,
+        currency: venue.currency,
+        status: "pending",
+        expires_at: newHoldExpiry(),
+        source: "online",
+        guest_name: null,
+        guest_email: null,
+        guest_phone: null,
+        payment_method: null,
+        amount_paid_cents: 0,
+        notes: null,
+      });
+    } catch (err) {
+      if (isBookingOverlapError(err)) {
+        throw new Error("This time slot is no longer available");
+      }
+      throw err;
+    }
     await invalidateVenuesCache(cache);
     return created;
   };
@@ -162,27 +176,34 @@ export const createOfflineBookingUseCase =
     const venue = await bookings.findVenuePricing(input.venue_id);
     if (!venue) throw new Error("Venue not found");
 
-    return bookings.create({
-      venue_id: input.venue_id,
-      customer_id: null,
-      coupon_id: null,
-      start_time: input.start_time,
-      end_time: input.end_time,
-      guest_count: input.guest_count ?? null,
-      subtotal_cents: input.total_cents,
-      discount_amount_cents: 0,
-      total_cents: input.total_cents,
-      currency: venue.currency,
-      status: "confirmed",
-      expires_at: null,
-      source: "offline",
-      guest_name: input.guest_name,
-      guest_email: input.guest_email ?? null,
-      guest_phone: input.guest_phone ?? null,
-      payment_method: input.payment_method,
-      amount_paid_cents: input.amount_paid_cents,
-      notes: input.notes ?? null,
-    });
+    try {
+      return await bookings.create({
+        venue_id: input.venue_id,
+        customer_id: null,
+        coupon_id: null,
+        start_time: input.start_time,
+        end_time: input.end_time,
+        guest_count: input.guest_count ?? null,
+        subtotal_cents: input.total_cents,
+        discount_amount_cents: 0,
+        total_cents: input.total_cents,
+        currency: venue.currency,
+        status: "confirmed",
+        expires_at: null,
+        source: "offline",
+        guest_name: input.guest_name,
+        guest_email: input.guest_email ?? null,
+        guest_phone: input.guest_phone ?? null,
+        payment_method: input.payment_method,
+        amount_paid_cents: input.amount_paid_cents,
+        notes: input.notes ?? null,
+      });
+    } catch (err) {
+      if (isBookingOverlapError(err)) {
+        throw new Error("This time slot conflicts with an existing booking");
+      }
+      throw err;
+    }
   };
 
 // ---------- Block-off (host blocks a slot, no customer) ----------
@@ -212,27 +233,34 @@ export const createBlockOffUseCase =
     const venue = await bookings.findVenuePricing(input.venue_id);
     if (!venue) throw new Error("Venue not found");
 
-    return bookings.create({
-      venue_id: input.venue_id,
-      customer_id: null,
-      coupon_id: null,
-      start_time: input.start_time,
-      end_time: input.end_time,
-      guest_count: null,
-      subtotal_cents: 0,
-      discount_amount_cents: 0,
-      total_cents: 0,
-      currency: venue.currency,
-      status: "confirmed",
-      expires_at: null,
-      source: "block_off",
-      guest_name: null,
-      guest_email: null,
-      guest_phone: null,
-      payment_method: null,
-      amount_paid_cents: 0,
-      notes: input.notes ?? null,
-    });
+    try {
+      return await bookings.create({
+        venue_id: input.venue_id,
+        customer_id: null,
+        coupon_id: null,
+        start_time: input.start_time,
+        end_time: input.end_time,
+        guest_count: null,
+        subtotal_cents: 0,
+        discount_amount_cents: 0,
+        total_cents: 0,
+        currency: venue.currency,
+        status: "confirmed",
+        expires_at: null,
+        source: "block_off",
+        guest_name: null,
+        guest_email: null,
+        guest_phone: null,
+        payment_method: null,
+        amount_paid_cents: 0,
+        notes: input.notes ?? null,
+      });
+    } catch (err) {
+      if (isBookingOverlapError(err)) {
+        throw new Error("This time slot conflicts with an existing booking");
+      }
+      throw err;
+    }
   };
 
 export interface ConfirmBookingSideEffects {
@@ -255,6 +283,19 @@ export const confirmBookingUseCase =
     if (booking.status === "confirmed") return booking;
     if (booking.status !== "pending") {
       throw new Error(`Cannot confirm booking in ${booking.status} state`);
+    }
+
+    // Re-check for conflicts before confirming — another booking may have been
+    // confirmed for this slot since the hold was created.
+    const conflicts = await bookings.findConflicts({
+      venue_id: booking.venue_id,
+      start_time: booking.start_time,
+      end_time: booking.end_time,
+    });
+    // Exclude this booking itself from the conflict list
+    const otherConflicts = conflicts.filter((c) => c.id !== booking.id);
+    if (otherConflicts.some((c) => isBlocking(c))) {
+      throw new Error("This time slot is no longer available. Please create a new booking.");
     }
 
     const updated = await bookings.updateStatus({
