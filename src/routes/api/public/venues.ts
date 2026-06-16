@@ -7,8 +7,7 @@
 // mutations are visible everywhere.
 
 import { createFileRoute } from "@tanstack/react-router";
-import { buildContainer } from "@/infrastructure/di/composition-root";
-import * as T from "@/infrastructure/di/tokens";
+import { buildServices } from "@/infrastructure/services";
 import type { VenueType } from "@repo/domain/venues";
 
 const CORS_HEADERS = {
@@ -36,10 +35,10 @@ export const Route = createFileRoute("/api/public/venues")({
         try {
           const url = new URL(request.url);
           const id = url.searchParams.get("id") || undefined;
-          const container = buildContainer();
+          const svc = buildServices();
 
           if (id) {
-            const venue = await container.resolve(T.GetVenue)(id);
+            const venue = await svc.getVenue(id);
             if (!venue) {
               return new Response(JSON.stringify({ error: "Venue not found" }), {
                 status: 404,
@@ -70,7 +69,7 @@ export const Route = createFileRoute("/api/public/venues")({
             min_capacity: min_capacity ?? 0,
           });
 
-          const cache = container.resolve(T.CacheStoreToken);
+          const cache = svc.cache;
 
           const cached = await cache.get("venues", cacheKey);
           if (cached) {
@@ -85,7 +84,7 @@ export const Route = createFileRoute("/api/public/venues")({
             });
           }
 
-          const venues = await container.resolve(T.ListVenues)({
+          const venues = await svc.listVenues({
             search,
             venue_type,
             min_capacity,

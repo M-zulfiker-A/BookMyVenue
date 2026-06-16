@@ -4,8 +4,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createAuth } from "@/lib/auth";
 import { getCloudflareEnv } from "@/lib/cloudflare-env";
-import { buildContainer } from "@/infrastructure/di/composition-root";
-import * as T from "@/infrastructure/di/tokens";
+import { buildServices } from "@/infrastructure/services";
 
 export const Route = createFileRoute("/api/bookings")({
   server: {
@@ -20,8 +19,8 @@ export const Route = createFileRoute("/api/bookings")({
 
         try {
           const cfEnv = getCloudflareEnv();
-          const container = buildContainer({ db: cfEnv.DB, userId: session.user.id });
-          const bookings = await container.resolve(T.ListMyBookings)(session.user.id);
+          const svc = buildServices({ db: cfEnv.DB, userId: session.user.id });
+          const bookings = await svc.listMyBookings(session.user.id);
           return Response.json(bookings);
         } catch (err) {
           return new Response(

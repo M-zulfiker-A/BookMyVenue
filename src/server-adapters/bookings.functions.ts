@@ -1,4 +1,4 @@
-// Presentation/server adapter — Bookings (DI-resolved use-cases)
+// Presentation/server adapter — Bookings
 
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
@@ -9,18 +9,17 @@ import {
   OfflineBookingSchema,
   QuoteSchema,
 } from "@repo/application/bookings";
-import { buildContainer } from "@/infrastructure/di/composition-root";
-import * as T from "@/infrastructure/di/tokens";
+import { buildServices } from "@/infrastructure/services";
 
 export const quoteBooking = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => QuoteSchema.parse(input))
-  .handler(({ data }) => buildContainer().resolve(T.QuoteBooking)(data));
+  .handler(({ data }) => buildServices().quoteBooking(data));
 
 export const createBookingHold = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .inputValidator((input: unknown) => QuoteSchema.parse(input))
   .handler(({ data, context }) =>
-    buildContainer({ db: context.db, userId: context.userId }).resolve(T.CreateBookingHold)(
+    buildServices({ db: context.db, userId: context.userId }).createBookingHold(
       data,
       context.userId,
     ),
@@ -30,7 +29,7 @@ export const confirmBooking = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .inputValidator((input: unknown) => BookingIdSchema.parse(input))
   .handler(({ data, context }) =>
-    buildContainer({ db: context.db, userId: context.userId }).resolve(T.ConfirmBooking)(
+    buildServices({ db: context.db, userId: context.userId }).confirmBooking(
       data.booking_id,
       context.userId,
     ),
@@ -40,7 +39,7 @@ export const cancelBooking = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .inputValidator((input: unknown) => BookingIdSchema.parse(input))
   .handler(({ data, context }) =>
-    buildContainer({ db: context.db, userId: context.userId }).resolve(T.CancelBooking)(
+    buildServices({ db: context.db, userId: context.userId }).cancelBooking(
       data.booking_id,
       context.userId,
     ),
@@ -49,7 +48,7 @@ export const cancelBooking = createServerFn({ method: "POST" })
 export const listMyBookings = createServerFn({ method: "GET" })
   .middleware([requireAuth])
   .handler(({ context }) =>
-    buildContainer({ db: context.db, userId: context.userId }).resolve(T.ListMyBookings)(
+    buildServices({ db: context.db, userId: context.userId }).listMyBookings(
       context.userId,
     ),
   );
@@ -57,7 +56,7 @@ export const listMyBookings = createServerFn({ method: "GET" })
 export const listHostBookings = createServerFn({ method: "GET" })
   .middleware([requireAuth])
   .handler(({ context }) =>
-    buildContainer({ db: context.db, userId: context.userId }).resolve(T.ListHostBookings)(
+    buildServices({ db: context.db, userId: context.userId }).listHostBookings(
       context.userId,
     ),
   );
@@ -71,14 +70,14 @@ export const getBooking = createServerFn({ method: "GET" })
   .inputValidator((input: unknown) => GetBookingSchema.parse(input))
   .handler(({ data, context }) => {
     const id = (data.id ?? data.booking_id)!;
-    return buildContainer({ db: context.db, userId: context.userId }).resolve(T.GetBooking)(id);
+    return buildServices({ db: context.db, userId: context.userId }).getBooking(id);
   });
 
 export const createOfflineBooking = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .inputValidator((input: unknown) => OfflineBookingSchema.parse(input))
   .handler(({ data, context }) =>
-    buildContainer({ db: context.db, userId: context.userId }).resolve(T.CreateOfflineBooking)(
+    buildServices({ db: context.db, userId: context.userId }).createOfflineBooking(
       data,
     ),
   );
@@ -87,5 +86,5 @@ export const createBlockOff = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .inputValidator((input: unknown) => BlockOffSchema.parse(input))
   .handler(({ data, context }) =>
-    buildContainer({ db: context.db, userId: context.userId }).resolve(T.CreateBlockOff)(data),
+    buildServices({ db: context.db, userId: context.userId }).createBlockOff(data),
   );

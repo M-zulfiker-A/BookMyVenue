@@ -4,8 +4,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createAuth } from "@/lib/auth";
 import { getCloudflareEnv } from "@/lib/cloudflare-env";
-import { buildContainer } from "@/infrastructure/di/composition-root";
-import * as T from "@/infrastructure/di/tokens";
+import { buildServices } from "@/infrastructure/services";
 
 export const Route = createFileRoute("/api/storage/$")({
   server: {
@@ -43,21 +42,18 @@ export const Route = createFileRoute("/api/storage/$")({
           }
 
           // 2. Load the booking metadata to check ownership (only customer, host, or admin)
-          const container = buildContainer({ db: env.DB, userId: session.user.id });
-          const invoicesRepo = container.resolve(T.InvoicesRepoToken);
-          const bookingsRepo = container.resolve(T.BookingsRepoToken);
-          const rolesRepo = container.resolve(T.UserRolesRepoToken);
+          const svc = buildServices({ db: env.DB, userId: session.user.id });
 
           // Find booking ID from invoice PDF path
           // Invoice paths are structured as: "invoices/BOOKING_UUID.pdf" or similar
           const bookingId = filePath.replace(/\.pdf$/, "");
-          const booking = await bookingsRepo.findWithVenue(bookingId);
+          const booking = await svc.bookingsRepo.findWithVenue(bookingId);
 
           if (!booking) {
             return new Response("Invoice Booking Not Found", { status: 404 });
           }
 
-          const isAdminUser = await rolesRepo.isAdmin(session.user.id);
+          const isAdminUser = await svc.userRolesRepo.isAdmin(session.user.id);
           const isOwner = booking.customer_id === session.user.id;
           const isHost = booking.venues?.host_id === session.user.id;
 
@@ -135,10 +131,8 @@ export const Route = createFileRoute("/api/storage/$")({
             // Paths are structured as "USER_ID/UUID-filename"
             // Ensure paths belong to current user
             const unauthorizedPath = paths.find((p) => !p.startsWith(`${session.user.id}/`));
-            const rolesRepo = buildContainer({ db: env.DB, userId: session.user.id }).resolve(
-              T.UserRolesRepoToken,
-            );
-            const isAdminUser = await rolesRepo.isAdmin(session.user.id);
+            const svc = buildServices({ db: env.DB, userId: session.user.id });
+            const isAdminUser = await svc.userRolesRepo.isAdmin(session.user.id);
 
             if (unauthorizedPath && !isAdminUser) {
               return new Response("Forbidden: Cannot delete other user's files", { status: 403 });

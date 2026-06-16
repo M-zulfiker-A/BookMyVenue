@@ -6,7 +6,7 @@
  *   1. `bun add @aws-sdk/client-cognito-identity-provider aws-jwt-verify`
  *   2. Provide USER_POOL_ID + CLIENT_ID via env
  *   3. Replace `makeSupabaseAuthProvider()` with `makeCognitoAuthProvider()`
- *      in src/infrastructure/di/composition-root.ts
+ *      in src/infrastructure/services.ts
  *
  * OAuth flows on Cognito use the Hosted UI redirect — the client-side path
  * here only covers username/password + redirect-style OAuth.

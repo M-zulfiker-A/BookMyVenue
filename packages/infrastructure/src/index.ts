@@ -1,5 +1,3 @@
-export * from "./di/container";
-
 // Auth adapters
 export { makeCognitoAuthProvider } from "./auth/cognito.auth";
 export type { CognitoAuthConfig } from "./auth/cognito.auth";

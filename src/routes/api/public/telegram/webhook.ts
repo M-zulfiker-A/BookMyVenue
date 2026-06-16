@@ -4,8 +4,7 @@
 
 import { createFileRoute } from "@tanstack/react-router";
 import { createHash, timingSafeEqual } from "crypto";
-import { buildContainer } from "@/infrastructure/di/composition-root";
-import * as T from "@/infrastructure/di/tokens";
+import { buildServices } from "@/infrastructure/services";
 import type { VenueType } from "@repo/domain/venues";
 import { pricingUnitLabel, type PricingMode } from "@repo/domain/venues";
 
@@ -152,7 +151,7 @@ async function handleMessage(chatId: number, text: string, appBase: string) {
 
   const filter = parseQuery(trimmed);
   try {
-    const venues = await buildContainer().resolve(T.ListVenues)(filter);
+    const venues = await buildServices().listVenues(filter);
 
     if (!venues.length) {
       await sendMessage(
