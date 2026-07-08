@@ -30,6 +30,10 @@ export const storageProvider: StorageProvider = {
     };
   },
 
+  async getObject() {
+    throw new Error("getObject is a server-side operation. Use fetch() to the storage API instead.");
+  },
+
   async upload(bucket, path, file) {
     const formData = new FormData();
     formData.append("bucket", bucket);

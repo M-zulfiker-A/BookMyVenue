@@ -35,20 +35,15 @@ export function useUserRoles() {
       setRoles([]);
       return;
     }
-    // In the Better Auth model, roles are stored as user metadata.
-    // For a more complete solution, fetch roles from the server via a server function.
     const userRole = user.metadata?.role as string | undefined;
-    if (userRole) {
-      setRoles(userRole === "host" ? ["customer", "host"] : ["customer"]);
-    } else {
-      setRoles(["customer"]);
+    const computedRoles = ["customer"];
+    if (userRole === "host" || user.metadata?.isHost === true) {
+      computedRoles.push("host");
     }
-    // TODO: For admin role detection, add a server function that checks
-    // the user_roles table. For now, check user metadata.
-    const isAdmin = user.metadata?.isAdmin === true;
-    if (isAdmin && !roles.includes("admin")) {
-      setRoles((prev) => [...prev, "admin"]);
+    if (userRole === "admin" || user.metadata?.isAdmin === true) {
+      computedRoles.push("admin");
     }
+    setRoles(computedRoles);
   }, [user]);
 
   return {

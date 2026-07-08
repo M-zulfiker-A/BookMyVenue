@@ -47,11 +47,19 @@ function EditVenuePage() {
     country: string;
     amenities: string;
     is_active: boolean;
+    disabled_from: string;
+    disabled_to: string;
   } | null>(null);
 
   useEffect(() => {
     if (!venue) return;
-    const a = (venue.address_data ?? {}) as { city?: string; state?: string; country?: string };
+    const a = (venue.address_data ?? {}) as {
+      city?: string;
+      state?: string;
+      country?: string;
+      disabled_from?: string;
+      disabled_to?: string;
+    };
     const amens = Array.isArray(venue.amenities)
       ? (venue.amenities as unknown[]).filter((x): x is string => typeof x === "string")
       : [];
@@ -68,6 +76,8 @@ function EditVenuePage() {
       country: a.country ?? "",
       amenities: amens.join(", "),
       is_active: venue.is_active,
+      disabled_from: a.disabled_from ?? "",
+      disabled_to: a.disabled_to ?? "",
     });
   }, [venue]);
 
@@ -84,7 +94,14 @@ function EditVenuePage() {
           base_price_cents: Math.round(Number(form.price) * 100),
           currency: form.currency,
           pricing_mode: form.pricing_mode,
-          address_data: { city: form.city, state: form.state, country: form.country },
+          address_data: {
+            ...((venue?.address_data ?? {}) as any),
+            city: form.city,
+            state: form.state,
+            country: form.country,
+            disabled_from: form.disabled_from || undefined,
+            disabled_to: form.disabled_to || undefined,
+          },
           amenities: form.amenities
             .split(",")
             .map((s) => s.trim())
@@ -223,6 +240,30 @@ function EditVenuePage() {
               id="country"
               value={form.country}
               onChange={(e) => setForm({ ...form, country: e.target.value })}
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4 border-t border-zinc-950/5 pt-4">
+          <div>
+            <Label htmlFor="disabled_from">Start of unavailable range (HH:mm)</Label>
+            <Input
+              id="disabled_from"
+              type="time"
+              step={1800}
+              value={form.disabled_from}
+              onChange={(e) => setForm({ ...form, disabled_from: e.target.value })}
+              placeholder="22:00"
+            />
+          </div>
+          <div>
+            <Label htmlFor="disabled_to">End of unavailable range (HH:mm)</Label>
+            <Input
+              id="disabled_to"
+              type="time"
+              step={1800}
+              value={form.disabled_to}
+              onChange={(e) => setForm({ ...form, disabled_to: e.target.value })}
+              placeholder="06:00"
             />
           </div>
         </div>

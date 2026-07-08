@@ -7,7 +7,14 @@ import {
   quoteBooking,
   createBookingHold,
   confirmBooking,
+  getAvailableTimeslots,
 } from "@/server-adapters/bookings.functions";
+import {
+  slotsToTimeRange,
+  slotToMinutes,
+  minutesToSlot,
+  generateTimeslots,
+} from "@repo/domain/timeslots";
 import {
   listVenueReviews,
   canIReviewVenue,
@@ -22,6 +29,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { DatePicker } from "@/components/ui/date-picker";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 
@@ -37,17 +52,17 @@ export const Route = createFileRoute("/venues/$venueId")({
   component: VenueDetailPage,
 });
 
-function defaultStart() {
+function defaultDate() {
   const d = new Date();
   d.setDate(d.getDate() + 7);
-  d.setHours(18, 0, 0, 0);
-  return d.toISOString().slice(0, 16);
+  return d;
 }
-function defaultEnd() {
-  const d = new Date();
-  d.setDate(d.getDate() + 7);
-  d.setHours(22, 0, 0, 0);
-  return d.toISOString().slice(0, 16);
+
+function dateToString(d: Date) {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 function VenueDetailPage() {
@@ -59,14 +74,74 @@ function VenueDetailPage() {
     queryFn: () => getVenue({ data: { id: venueId } }),
   });
 
-  const [start, setStart] = useState(defaultStart());
-  const [end, setEnd] = useState(defaultEnd());
+  const [date, setDate] = useState<Date | undefined>(defaultDate());
+  const dateStr = date ? dateToString(date) : "";
+  const [startSlot, setStartSlot] = useState("");
+  const [endSlot, setEndSlot] = useState("");
   const [guests, setGuests] = useState<number>(50);
   const [coupon, setCoupon] = useState("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const startIso = useMemo(() => new Date(start).toISOString(), [start]);
-  const endIso = useMemo(() => new Date(end).toISOString(), [end]);
+  useEffect(() => {
+    setStartSlot("");
+    setEndSlot("");
+  }, [dateStr]);
+
+  const getTimeslotsFn = useServerFn(getAvailableTimeslots);
+  const { data: timeslots, isLoading: isTimeslotsLoading } = useQuery({
+    queryKey: ["timeslots", venueId, dateStr],
+    queryFn: () => getTimeslotsFn({ data: { venue_id: venueId, date: dateStr } }),
+    enabled: !!venue && !!dateStr,
+  });
+
+  // All 48 half-hour slot labels for the end-time dropdown (includes 24:00)
+  const allSlotLabels = useMemo(() => generateTimeslots(), []);
+
+  // Build the end-time options: every slot after startSlot, up to 24:00
+  const endSlotOptions = useMemo(() => {
+    if (!startSlot || !timeslots) return [];
+    const startMin = slotToMinutes(startSlot);
+    const opts: { value: string; label: string; disabled: boolean }[] = [];
+    // Walk forward in 30-min increments from startSlot+30 to 24:00
+    for (let min = startMin + 30; min <= 1440; min += 30) {
+      const slotLabel = minutesToSlot(min % 1440);
+      const display = min === 1440 ? "24:00" : slotLabel;
+      // Check every slot in the range [startSlot .. this end) for availability
+      let rangeBlocked = false;
+      for (let check = startMin; check < min; check += 30) {
+        const checkSlot = minutesToSlot(check);
+        const s = timeslots.find((t) => t.time === checkSlot);
+        if (!s || !s.is_available) {
+          rangeBlocked = true;
+          break;
+        }
+      }
+      opts.push({ value: display, label: display, disabled: rangeBlocked });
+      // Stop listing options after the first blocked slot
+      if (rangeBlocked) break;
+    }
+    return opts;
+  }, [startSlot, timeslots]);
+
+  // Derive selectedSlots from start/end
+  const selectedSlots = useMemo(() => {
+    if (!startSlot || !endSlot) return [];
+    const startMin = slotToMinutes(startSlot);
+    const endMin = endSlot === "24:00" ? 1440 : slotToMinutes(endSlot);
+    const slots: string[] = [];
+    for (let m = startMin; m < endMin; m += 30) {
+      slots.push(minutesToSlot(m));
+    }
+    return slots;
+  }, [startSlot, endSlot]);
+
+  const timeRange = useMemo(() => {
+    if (selectedSlots.length === 0 || !dateStr) return null;
+    return slotsToTimeRange(dateStr, selectedSlots);
+  }, [dateStr, selectedSlots]);
+
+  const startIso = timeRange?.startIso ?? "";
+  const endIso = timeRange?.endIso ?? "";
 
   const quoteFn = useServerFn(quoteBooking);
   const { data: quote } = useQuery({
@@ -81,8 +156,14 @@ function VenueDetailPage() {
           coupon_code: coupon || undefined,
         },
       }).catch(() => null),
-    enabled: !!venue && new Date(end) > new Date(start),
+    enabled: !!venue && !!timeRange,
   });
+
+  const selectedRangeText = useMemo(() => {
+    if (!startSlot || !endSlot) return null;
+    const hours = selectedSlots.length * 0.5;
+    return `${startSlot} – ${endSlot} (${hours} ${hours === 1 ? "hour" : "hours"})`;
+  }, [startSlot, endSlot, selectedSlots.length]);
 
   const holdFn = useServerFn(createBookingHold);
   const confirmFn = useServerFn(confirmBooking);
@@ -210,35 +291,90 @@ function VenueDetailPage() {
                 </span>
               </div>
 
-              <div className="space-y-3 mb-4">
+              <div className="space-y-4 mb-4">
                 <div>
                   <Label
-                    htmlFor="start"
+                    htmlFor="date"
                     className="text-[9px] uppercase tracking-wider text-lead/50 font-bold"
                   >
-                    Start
+                    Select Date
                   </Label>
-                  <Input
-                    id="start"
-                    type="datetime-local"
-                    value={start}
-                    onChange={(e) => setStart(e.target.value)}
-                  />
+                  <div className="mt-1">
+                    <DatePicker
+                      id="date"
+                      value={date}
+                      onChange={setDate}
+                      disabled={(d) => d < new Date(new Date().toDateString())}
+                      placeholder="Pick a date"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <Label
-                    htmlFor="end"
-                    className="text-[9px] uppercase tracking-wider text-lead/50 font-bold"
-                  >
-                    End
-                  </Label>
-                  <Input
-                    id="end"
-                    type="datetime-local"
-                    value={end}
-                    onChange={(e) => setEnd(e.target.value)}
-                  />
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label
+                      className="text-[9px] uppercase tracking-wider text-lead/50 font-bold"
+                    >
+                      Start Time
+                    </Label>
+                    {isTimeslotsLoading ? (
+                      <div className="text-xs text-lead/50 animate-pulse py-3">Loading…</div>
+                    ) : (
+                      <Select
+                        value={startSlot}
+                        onValueChange={(v) => {
+                          setStartSlot(v);
+                          setEndSlot("");
+                        }}
+                      >
+                        <SelectTrigger className="mt-1">
+                          <SelectValue placeholder="Select start…" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {allSlotLabels.map((slot) => {
+                            const s = timeslots?.find((t) => t.time === slot);
+                            const isDisabled = !s || !s.is_available;
+                            return (
+                              <SelectItem key={slot} value={slot} disabled={isDisabled}>
+                                {slot}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  </div>
+                  <div>
+                    <Label
+                      className="text-[9px] uppercase tracking-wider text-lead/50 font-bold"
+                    >
+                      End Time
+                    </Label>
+                    <Select
+                      value={endSlot}
+                      onValueChange={setEndSlot}
+                      disabled={!startSlot}
+                    >
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Select end…" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {endSlotOptions.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value} disabled={opt.disabled}>
+                            {opt.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
+
+                {selectedRangeText && (
+                  <div className="rounded-lg bg-brand/5 border border-brand/10 p-2.5 text-center text-xs text-brand font-medium">
+                    {selectedRangeText}
+                  </div>
+                )}
+
                 <div>
                   <Label
                     htmlFor="guests"
@@ -253,6 +389,7 @@ function VenueDetailPage() {
                     max={venue.capacity}
                     value={guests}
                     onChange={(e) => setGuests(Number(e.target.value))}
+                    className="mt-1"
                   />
                 </div>
                 <div>
@@ -267,6 +404,7 @@ function VenueDetailPage() {
                     value={coupon}
                     onChange={(e) => setCoupon(e.target.value.toUpperCase())}
                     placeholder="ATELIER10"
+                    className="mt-1"
                   />
                 </div>
               </div>

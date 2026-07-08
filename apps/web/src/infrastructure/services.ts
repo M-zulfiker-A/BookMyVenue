@@ -21,6 +21,8 @@ import {
   makeBetterAuthProvider,
   CacheStoreManager,
   makeDrizzleD1Factory,
+  makeR2BindingStorageProvider,
+  makeR2InvoiceStorage,
 } from "@repo/infrastructure";
 import {
   cancelBookingUseCase,
@@ -33,6 +35,7 @@ import {
   listMyBookingsUseCase,
   quoteBookingUseCase,
 } from "@repo/application/bookings";
+import { getAvailableTimeslotsUseCase } from "@repo/application/timeslots";
 import {
   becomeHostUseCase,
   createVenueUseCase,
@@ -152,6 +155,7 @@ export interface AppServices {
   getBooking: ReturnType<typeof getBookingUseCase>;
   createOfflineBooking: ReturnType<typeof createOfflineBookingUseCase>;
   createBlockOff: ReturnType<typeof createBlockOffUseCase>;
+  getAvailableTimeslots: ReturnType<typeof getAvailableTimeslotsUseCase>;
 
   // ---- Use cases — Coupons ----
   listHostCoupons: ReturnType<typeof listHostCouponsUseCase>;
@@ -192,13 +196,14 @@ export interface AppServices {
  * so writes are scoped to the caller; omit it for public reads.
  */
 export function buildServices(opts: RootOptions = {}): AppServices {
-  let d1 = opts.db ?? opts.adminDb ?? getCloudflareEnv().DB;
+  const cfEnv = getCloudflareEnv();
+  let d1 = opts.db ?? opts.adminDb ?? cfEnv.DB;
 
   if (!d1) {
     // Fallback/Mock for local build & typecheck tasks if DB is not bound yet
     d1 = {
       prepare: () => ({ bind: () => ({ all: async () => [] }) }),
-      exec: async () => {},
+      exec: async () => { },
       batch: async () => [],
     };
   }
@@ -212,30 +217,18 @@ export function buildServices(opts: RootOptions = {}): AppServices {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const auth = makeBetterAuthProvider({} as any);
 
-  // Storage provider stub (Phase 4 will wire up R2)
-  const storage: StorageProvider = {
-    getPublicUrl: (_b: string, p: string) => p,
-    createSignedUploadUrl: () => {
-      throw new Error("Storage migration pending");
+  // Storage — Cloudflare R2 via native bucket bindings
+  const storage: StorageProvider = makeR2BindingStorageProvider({
+    buckets: {
+      "venue-images": cfEnv.VENUE_IMAGES,
+      invoices: cfEnv.INVOICES,
     },
-    createSignedDownloadUrl: () => {
-      throw new Error("Storage migration pending");
-    },
-    upload: () => {
-      throw new Error("Storage migration pending");
-    },
-    delete: () => {
-      throw new Error("Storage migration pending");
-    },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } as any;
+  });
 
   // Cache
   const cache = new CacheStoreManager({
     drizzleDb: adminDb,
-    kv: opts.cacheKv ?? getCloudflareEnv().CACHE_KV,
-    upstashUrl: process.env.UPSTASH_REDIS_REST_URL,
-    upstashToken: process.env.UPSTASH_REDIS_REST_TOKEN,
+    kv: opts.cacheKv ?? cfEnv.CACHE_KV,
   });
 
   // ---- Repositories (singletons within this request scope) ----
@@ -249,11 +242,10 @@ export function buildServices(opts: RootOptions = {}): AppServices {
   const invoicesRepo = makeDrizzleInvoicesRepo({ adminDb });
   const profilesRepo = makeDrizzleProfilesRepo({ adminDb });
 
-  // Invoice storage stub (Phase 4 will wire up R2)
-  const invoiceStorage: InvoiceStorage = {
-    upload: async (p: string) => ({ path: p }),
-    createSignedDownloadUrl: async (p: string) => p,
-  };
+  // Invoice storage — private R2 bucket for PDF invoices
+  const invoiceStorage: InvoiceStorage = makeR2InvoiceStorage({
+    bucket: cfEnv.INVOICES,
+  });
 
   const invoicePdfRenderer = makePdfLibInvoiceRenderer();
   const emailSender = makeResendEmailSender({
@@ -312,6 +304,7 @@ export function buildServices(opts: RootOptions = {}): AppServices {
   const getBooking = getBookingUseCase(bookingsRepo);
   const createOfflineBooking = createOfflineBookingUseCase(bookingsRepo);
   const createBlockOff = createBlockOffUseCase(bookingsRepo);
+  const getAvailableTimeslots = getAvailableTimeslotsUseCase(venuesRepo, bookingsRepo);
 
   // Coupons
   const listHostCoupons = listHostCouponsUseCase(couponsRepo);
@@ -382,6 +375,7 @@ export function buildServices(opts: RootOptions = {}): AppServices {
     getBooking,
     createOfflineBooking,
     createBlockOff,
+    getAvailableTimeslots,
 
     // Use cases — Coupons
     listHostCoupons,

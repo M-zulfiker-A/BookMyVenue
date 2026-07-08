@@ -76,6 +76,9 @@ function NewVenuePage() {
     // Media
     cover_image_url: "",
     gallery_urls: [] as string[],
+    // Timeslots config
+    disabled_from: "",
+    disabled_to: "",
   });
   const [uploadingCover, setUploadingCover] = useState(false);
   const [uploadingGallery, setUploadingGallery] = useState(false);
@@ -146,6 +149,8 @@ function NewVenuePage() {
             rules: form.rules,
             cancellation_policy: form.cancellation_policy,
             min_booking_hours: Number(form.min_booking_hours) || 1,
+            disabled_from: form.disabled_from || undefined,
+            disabled_to: form.disabled_to || undefined,
           },
           amenities: form.amenities
             .split(",")
@@ -527,6 +532,33 @@ function NewVenuePage() {
                 value={form.country}
                 onChange={(e) => setForm({ ...form, country: e.target.value })}
                 required
+              />
+            </div>
+          </div>
+        </Section>
+
+        <Section title="Unavailable Hours" subtitle="Set a daily time range during which bookings are disabled (e.g. late night).">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="disabled_from">Start of unavailable range (HH:mm)</Label>
+              <Input
+                id="disabled_from"
+                type="time"
+                step={1800}
+                value={form.disabled_from}
+                onChange={(e) => setForm({ ...form, disabled_from: e.target.value })}
+                placeholder="22:00"
+              />
+            </div>
+            <div>
+              <Label htmlFor="disabled_to">End of unavailable range (HH:mm)</Label>
+              <Input
+                id="disabled_to"
+                type="time"
+                step={1800}
+                value={form.disabled_to}
+                onChange={(e) => setForm({ ...form, disabled_to: e.target.value })}
+                placeholder="06:00"
               />
             </div>
           </div>

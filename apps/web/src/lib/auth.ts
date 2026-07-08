@@ -8,8 +8,10 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { drizzle } from "drizzle-orm/d1";
-import { profiles, sessions, accounts, verifications } from "@repo/infrastructure";
+import { profiles, sessions, accounts, verifications, userRoles } from "@repo/infrastructure";
 import { getCloudflareEnv } from "./cloudflare-env";
+import { customSession } from "better-auth/plugins";
+import { eq } from "drizzle-orm";
 
 /**
  * Create a Better Auth instance bound to the current request's D1 database.
@@ -79,6 +81,25 @@ export function createAuth() {
         enabled: false,
       },
     },
+    plugins: [
+      customSession(async ({ user, session }) => {
+        const rows = await db
+          .select({ role: userRoles.role })
+          .from(userRoles)
+          .where(eq(userRoles.userId, user.id));
+        const roles = rows.map((r) => r.role);
+        return {
+          user: {
+            ...user,
+            role: roles.includes("admin") ? "admin" : roles.includes("host") ? "host" : (user as any).role,
+            isAdmin: roles.includes("admin"),
+            isHost: roles.includes("host"),
+            roles,
+          },
+          session,
+        };
+      }),
+    ],
   });
 }
 

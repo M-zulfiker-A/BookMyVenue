@@ -9,6 +9,7 @@ import {
   OfflineBookingSchema,
   QuoteSchema,
 } from "@repo/application/bookings";
+import { TimeslotsInputSchema } from "@repo/application/timeslots";
 import { buildServices } from "@/infrastructure/services";
 
 export const quoteBooking = createServerFn({ method: "POST" })
@@ -88,3 +89,7 @@ export const createBlockOff = createServerFn({ method: "POST" })
   .handler(({ data, context }) =>
     buildServices({ db: context.db, userId: context.userId }).createBlockOff(data),
   );
+
+export const getAvailableTimeslots = createServerFn({ method: "GET" })
+  .inputValidator((input: unknown) => TimeslotsInputSchema.parse(input))
+  .handler(({ data }) => buildServices().getAvailableTimeslots(data));

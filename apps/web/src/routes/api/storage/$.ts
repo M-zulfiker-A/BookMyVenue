@@ -1,9 +1,10 @@
 // Catch-all API route for Cloudflare R2 storage operations.
-// Handles file uploads, public asset serving, and secure invoice downloads.
+// All storage operations are delegated to the StorageProvider and
+// InvoiceStorage services from @repo/infrastructure via the
+// composition root (buildServices).
 
 import { createFileRoute } from "@tanstack/react-router";
 import { createAuth } from "@/lib/auth";
-import { getCloudflareEnv } from "@/lib/cloudflare-env";
 import { buildServices } from "@/infrastructure/services";
 
 export const Route = createFileRoute("/api/storage/$")({
@@ -20,10 +21,10 @@ export const Route = createFileRoute("/api/storage/$")({
           return new Response("Malformed URL", { status: 400 });
         }
 
-        const env = getCloudflareEnv();
+        const svc = buildServices();
 
         if (type === "public" && bucketName === "venue-images") {
-          const file = await env.VENUE_IMAGES.get(filePath);
+          const file = await svc.storage.getObject("venue-images", filePath);
           if (!file) return new Response("File Not Found", { status: 404 });
 
           const headers = new Headers();
@@ -42,8 +43,6 @@ export const Route = createFileRoute("/api/storage/$")({
           }
 
           // 2. Load the booking metadata to check ownership (only customer, host, or admin)
-          const svc = buildServices({ db: env.DB, userId: session.user.id });
-
           // Find booking ID from invoice PDF path
           // Invoice paths are structured as: "invoices/BOOKING_UUID.pdf" or similar
           const bookingId = filePath.replace(/\.pdf$/, "");
@@ -62,7 +61,7 @@ export const Route = createFileRoute("/api/storage/$")({
           }
 
           // 3. Retrieve and stream the PDF from private R2 bucket
-          const file = await env.INVOICES.get(filePath);
+          const file = await svc.storage.getObject("invoices", filePath);
           if (!file) return new Response("Invoice File Not Found", { status: 404 });
 
           const headers = new Headers();
@@ -80,13 +79,14 @@ export const Route = createFileRoute("/api/storage/$")({
         const url = new URL(request.url);
         const operation = url.pathname.replace(/^\/api\/storage\//, "");
 
-        const env = getCloudflareEnv();
         const auth = createAuth();
         const session = await auth.api.getSession({ headers: request.headers });
 
         if (!session?.user) {
           return new Response("Unauthorized", { status: 401 });
         }
+
+        const svc = buildServices({ userId: session.user.id });
 
         if (operation === "upload") {
           const formData = await request.formData();
@@ -98,17 +98,11 @@ export const Route = createFileRoute("/api/storage/$")({
             return new Response("Missing required parameters", { status: 400 });
           }
 
-          const bucketBinding = bucket === "venue-images" ? env.VENUE_IMAGES : env.INVOICES;
-          if (!bucketBinding) {
-            return new Response(`Bucket binding ${bucket} not found`, { status: 500 });
-          }
-
-          const arrayBuffer = await file.arrayBuffer();
-          await bucketBinding.put(path, arrayBuffer, {
-            httpMetadata: { contentType: file.type || "application/octet-stream" },
+          const result = await svc.storage.upload(bucket, path, file, {
+            contentType: file.type || "application/octet-stream",
           });
 
-          return new Response(JSON.stringify({ path }), {
+          return new Response(JSON.stringify({ path: result.path }), {
             headers: { "Content-Type": "application/json" },
           });
         }
@@ -121,17 +115,11 @@ export const Route = createFileRoute("/api/storage/$")({
             return new Response("Invalid parameters", { status: 400 });
           }
 
-          const bucketBinding = bucket === "venue-images" ? env.VENUE_IMAGES : env.INVOICES;
-          if (!bucketBinding) {
-            return new Response(`Bucket binding ${bucket} not found`, { status: 500 });
-          }
-
           // Enforce host/owner verification on deletes
           if (bucket === "venue-images") {
             // Paths are structured as "USER_ID/UUID-filename"
             // Ensure paths belong to current user
             const unauthorizedPath = paths.find((p) => !p.startsWith(`${session.user.id}/`));
-            const svc = buildServices({ db: env.DB, userId: session.user.id });
             const isAdminUser = await svc.userRolesRepo.isAdmin(session.user.id);
 
             if (unauthorizedPath && !isAdminUser) {
@@ -139,7 +127,7 @@ export const Route = createFileRoute("/api/storage/$")({
             }
           }
 
-          await Promise.all(paths.map((p) => bucketBinding.delete(p)));
+          await svc.storage.delete(bucket, paths);
           return new Response(JSON.stringify({ ok: true }), {
             headers: { "Content-Type": "application/json" },
           });
